@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MxlOSGiXMPPBundle Plug-in
+Bundle-SymbolicName: MxlOSGiXMPPBundle
+Bundle-Version: 1.0.0
+Bundle-ClassPath: bin/
+Bundle-Activator: net.sf.mxlosgi.mxlosgixmppbundle.Activator
+Bundle-Vendor: Noah
+Import-Package: net.sf.mxlosgi.mxlosgiutilsbundle,
+ org.osgi.framework;version="1.3.0"
+Eclipse-LazyStart: true
+Export-Package: net.sf.mxlosgi.mxlosgixmppbundle
