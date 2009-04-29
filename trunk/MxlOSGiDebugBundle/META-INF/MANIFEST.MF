@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MxlOSGiDebugBundle Plug-in
+Bundle-SymbolicName: MxlOSGiDebugBundle
+Bundle-Version: 1.0.0
+Bundle-ClassPath: bin/
+Bundle-Activator: net.sf.mxlosgi.mxlosgidebugbundle.Activator
+Bundle-Vendor: Noah
+Import-Package: net.sf.mxlosgi.mxlosgimainbundle,
+ net.sf.mxlosgi.mxlosgimainbundle.filter,
+ net.sf.mxlosgi.mxlosgimainbundle.listener,
+ net.sf.mxlosgi.mxlosgiutilsbundle,
+ net.sf.mxlosgi.mxlosgixmppbundle,
+ org.osgi.framework;version="1.3.0",
+ org.osgi.util.tracker;version="1.3.3"
+Eclipse-LazyStart: true

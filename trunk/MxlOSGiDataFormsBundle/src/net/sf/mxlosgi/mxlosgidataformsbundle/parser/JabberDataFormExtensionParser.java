@@ -1,0 +1,229 @@
+package net.sf.mxlosgi.mxlosgidataformsbundle.parser;
+
+import java.io.IOException;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import net.sf.mxlosgi.mxlosgidataformsbundle.DataForm;
+import net.sf.mxlosgi.mxlosgidataformsbundle.FormField;
+import net.sf.mxlosgi.mxlosgidataformsbundle.DataForm.Item;
+import net.sf.mxlosgi.mxlosgidataformsbundle.DataForm.ReportedData;
+import net.sf.mxlosgi.mxlosgidataformsbundle.FormField.Option;
+import net.sf.mxlosgi.mxlosgixmppbundle.PacketExtension;
+import net.sf.mxlosgi.mxlosgixmppparserbundle.ExtensionParser;
+import net.sf.mxlosgi.mxlosgixmppparserbundle.XMPPParser;
+
+/**
+ * @author noah
+ * 
+ */
+public class JabberDataFormExtensionParser implements ExtensionParser
+{
+
+	public JabberDataFormExtensionParser()
+	{
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.mxl.mxlmainbundle.ExtensionParser#getElementName()
+	 */
+	@Override
+	public String getElementName()
+	{
+		return "x";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.mxl.mxlmainbundle.ExtensionParser#getNamespace()
+	 */
+	@Override
+	public String getNamespace()
+	{
+		return "jabber:x:data";
+	}
+
+	@Override
+	public PacketExtension parseExtension(XmlPullParser parser, XMPPParser xmppParser) throws Exception
+	{
+		DataForm dataForm = new DataForm();
+		boolean done = false;
+
+		String type = parser.getAttributeValue("", "type");
+		dataForm.setType(DataForm.Type.valueOf(type));
+		while (!done)
+		{
+			int eventType = parser.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				if ("title".equals(parser.getName()))
+				{
+					dataForm.setTitle(parser.nextText());
+				}
+				else if ("instructions".equals(parser.getName()))
+				{
+					dataForm.addInstruction(parser.nextText());
+				}
+				else if ("field".equals(parser.getName()))
+				{
+					dataForm.addField(parseFormField(parser));
+				}
+				else if ("reported".equals(parser.getName()))
+				{
+					dataForm.setReportedData(parseReported(parser));
+				}
+				else if ("item".equals(parser.getName()))
+				{
+					dataForm.addItem(parseItem(parser));
+				}
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				if (getElementName().equals(parser.getName()))
+				{
+					done = true;
+				}
+			}
+		}
+
+		return dataForm;
+	}
+
+	private Item parseItem(XmlPullParser parser2) throws XmlPullParserException, IOException
+	{
+		DataForm.Item item = new DataForm.Item();
+		boolean done = false;
+		while (!done)
+		{
+			int eventType = parser2.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				if ("field".equals(parser2.getName()))
+				{
+					item.addField(parseFormField(parser2));
+				}
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				if ("item".equals(parser2.getName()))
+				{
+					done = true;
+				}
+			}
+		}
+		return item;
+	}
+
+	private ReportedData parseReported(XmlPullParser parser2) throws XmlPullParserException, IOException
+	{
+		boolean done = false;
+		DataForm.ReportedData reported = new DataForm.ReportedData();
+
+		while (!done)
+		{
+			int eventType = parser2.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				if ("field".equals(parser2.getName()))
+				{
+					reported.addField(parseFormField(parser2));
+				}
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				if ("reported".equals(parser2.getName()))
+				{
+					done = true;
+				}
+			}
+		}
+		return reported;
+	}
+
+	private FormField parseFormField(XmlPullParser parser2) throws XmlPullParserException, IOException
+	{
+		boolean done = false;
+		FormField formField = new FormField(parser2.getAttributeValue("", "var"));
+		formField.setType(parser2.getAttributeValue("", "type"));
+		formField.setLabel(parser2.getAttributeValue("", "label"));
+
+		while (!done)
+		{
+			int eventType = parser2.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				if ("desc".equals(parser2.getName()))
+				{
+					formField.setDescription(parser2.nextText());
+				}
+				else if ("required".equals(parser2.getName()))
+				{
+					formField.setRequired(true);
+				}
+				else if ("value".equals(parser2.getName()))
+				{
+					formField.addValue(parser2.nextText());
+				}
+				else if ("option".equals(parser2.getName()))
+				{
+					FormField.Option option = parseOption(parser2);
+					// String label =
+					// parser2.getAttributeValue("",
+					// "label");
+					// String value =
+					// parseOptionValue(parser2);
+					// FormField.Option option =
+					// new FormField.Option(label,
+					// value);
+					formField.addOption(option);
+				}
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				if ("field".equals(parser2.getName()))
+				{
+					done = true;
+				}
+			}
+		}
+		return formField;
+	}
+
+	private Option parseOption(XmlPullParser parser2) throws XmlPullParserException, IOException
+	{
+		FormField.Option option = null;
+
+		boolean done = false;
+		String label = parser2.getAttributeValue("", "label");
+
+		while (!done)
+		{
+			int eventType = parser2.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				if ("value".equals(parser2.getName()))
+				{
+					String value = parser2.nextText();
+					option = new FormField.Option(label, value);
+				}
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				if ("option".equals(parser2.getName()))
+				{
+					done = true;
+				}
+			}
+		}
+		return option;
+	}
+}
