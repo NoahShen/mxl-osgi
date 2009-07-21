@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Utils Plug-in
+Bundle-SymbolicName: net.sf.mxlosgi.utils
+Bundle-Version: 1.0.0
+Bundle-ClassPath: bin/
+Bundle-Activator: net.sf.mxlosgi.utils.Activator
+Bundle-Vendor: Noah
+Import-Package: org.osgi.framework;version="1.3.0"
+Eclipse-LazyStart: true
+Export-Package: net.sf.mxlosgi.utils,
+ net.sf.mxlosgi.utils.collections
