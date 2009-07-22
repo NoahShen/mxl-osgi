@@ -15,7 +15,7 @@ public interface Future
 	 * 
 	 * @return connection
 	 */
-	public XMPPConnection getConnection();
+	public XmppConnection getConnection();
 
 	/**
 	 * Waits if necessary for the task to complete. Warn: Block operate

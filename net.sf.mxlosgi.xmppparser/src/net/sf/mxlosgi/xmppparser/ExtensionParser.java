@@ -29,5 +29,5 @@ public interface ExtensionParser
 	 * @param parser
 	 * @return
 	 */
-	public PacketExtension parseExtension(XmlPullParser parser, XMPPParser xmppParser) throws Exception;
+	public PacketExtension parseExtension(XmlPullParser parser, XmppParser xmppParser) throws Exception;
 }

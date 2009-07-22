@@ -1,6 +1,6 @@
 package net.sf.mxlosgi.core.filter;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.Packet;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
@@ -27,7 +27,7 @@ public class PacketIDFilter implements StanzaFilter
 	}
 
 	@Override
-	public boolean accept(XMPPConnection connection, XMLStanza stanza)
+	public boolean accept(XmppConnection connection, XMLStanza stanza)
 	{
 		if (stanza instanceof Packet)
 		{

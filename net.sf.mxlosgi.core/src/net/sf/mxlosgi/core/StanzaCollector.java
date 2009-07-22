@@ -58,5 +58,5 @@ public interface StanzaCollector
 	 * @param connection
 	 * @param stanza
 	 */
-	public void processPacket(XMPPConnection connection, XMLStanza stanza);
+	public void processPacket(XmppConnection connection, XMLStanza stanza);
 }

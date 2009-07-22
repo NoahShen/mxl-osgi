@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.core.impl;
 
 import net.sf.mxlosgi.core.Future;
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 
 
 /**
@@ -13,12 +13,12 @@ import net.sf.mxlosgi.core.XMPPConnection;
  */
 public class ConnectFuture implements Future
 {
-	private XMPPConnection connection;
+	private XmppConnection connection;
 	
 	/**
 	 * @param connection
 	 */
-	public ConnectFuture(XMPPConnection connection)
+	public ConnectFuture(XmppConnection connection)
 	{
 		this.connection = connection;
 	}
@@ -72,7 +72,7 @@ public class ConnectFuture implements Future
 	 * @see net.sf.mxlosgi.mxlosgimainbundle.Future#getConnection()
 	 */
 	@Override
-	public XMPPConnection getConnection()
+	public XmppConnection getConnection()
 	{
 		return connection;
 	}

@@ -1,6 +1,6 @@
 package net.sf.mxlosgi.core.filter;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
 
@@ -21,7 +21,7 @@ public class StanzaTypeFilter implements StanzaFilter
 
 
 	@Override
-	public boolean accept(XMPPConnection connection, XMLStanza data)
+	public boolean accept(XmppConnection connection, XMLStanza data)
 	{
 		return classType.isInstance(data);
 	}
