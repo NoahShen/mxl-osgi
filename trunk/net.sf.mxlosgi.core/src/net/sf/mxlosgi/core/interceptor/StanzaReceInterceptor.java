@@ -1,6 +1,6 @@
 package net.sf.mxlosgi.core.interceptor;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
 
@@ -15,5 +15,5 @@ public interface StanzaReceInterceptor
 	 * @param data
 	 *                  the data to is going to be sent to the server.
 	 */
-	public boolean interceptReceStanza(XMPPConnection connection, XMLStanza data);
+	public boolean interceptReceStanza(XmppConnection connection, XMLStanza data);
 }

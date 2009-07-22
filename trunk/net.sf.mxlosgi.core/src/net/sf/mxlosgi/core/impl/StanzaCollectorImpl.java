@@ -4,7 +4,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.sf.mxlosgi.core.StanzaCollector;
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.core.filter.StanzaFilter;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
@@ -20,7 +20,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 
 	private static final int MAX = 65536;
 
-	private XMPPConnectionImpl connection;
+	private XmppConnectionImpl connection;
 
 	private Queue<XMLStanza> resultQueue;
 
@@ -28,7 +28,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 
 	private Object lock = new Object();
 	
-	StanzaCollectorImpl(XMPPConnectionImpl connection, StanzaFilter stanzaFilter)
+	StanzaCollectorImpl(XmppConnectionImpl connection, StanzaFilter stanzaFilter)
 	{
 		this.connection = connection;
 		this.stanzaFilter = stanzaFilter;
@@ -158,7 +158,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 	}
 
 	@Override
-	public void processPacket(XMPPConnection connection, XMLStanza data)
+	public void processPacket(XmppConnection connection, XMLStanza data)
 	{
 		if (data == null)
 		{

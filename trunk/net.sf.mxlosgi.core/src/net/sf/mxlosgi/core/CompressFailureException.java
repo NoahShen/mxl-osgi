@@ -11,7 +11,7 @@ import net.sf.mxlosgi.xmpp.XMPPError;
  * @author noah
  *
  */
-public class CompressFailureException extends XMPPException
+public class CompressFailureException extends XmppException
 {
 
 	/**

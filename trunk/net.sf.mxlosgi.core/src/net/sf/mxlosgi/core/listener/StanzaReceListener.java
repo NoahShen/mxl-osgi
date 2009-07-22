@@ -1,6 +1,6 @@
 package net.sf.mxlosgi.core.listener;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
 
@@ -14,6 +14,6 @@ public interface StanzaReceListener
 	 * @param stanza
 	 *                  the stanza to process.
 	 */
-	public void processReceStanza(XMPPConnection connection, XMLStanza stanza);
+	public void processReceStanza(XmppConnection connection, XMLStanza stanza);
 
 }

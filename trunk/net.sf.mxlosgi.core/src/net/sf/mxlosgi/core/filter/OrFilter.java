@@ -3,7 +3,7 @@ package net.sf.mxlosgi.core.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
 
@@ -62,7 +62,7 @@ public class OrFilter implements StanzaFilter
 	}
 
 	@Override
-	public boolean accept(XMPPConnection connection, XMLStanza data)
+	public boolean accept(XmppConnection connection, XMLStanza data)
 	{
 		for (int i = 0; i < filters.size(); ++i)
 		{

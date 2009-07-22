@@ -22,7 +22,7 @@ public class Activator implements BundleActivator
 		ExtensionParserServiceTracker tracker = new ExtensionParserServiceTracker(context);
 		tracker.open();
 		XMPPParserImpl parser = new XMPPParserImpl(tracker);
-		sr = context.registerService(XMPPParser.class.getName(), parser, null);
+		sr = context.registerService(XmppParser.class.getName(), parser, null);
 	}
 
 	/*

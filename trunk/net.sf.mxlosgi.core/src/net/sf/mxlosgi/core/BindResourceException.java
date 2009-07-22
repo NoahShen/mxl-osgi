@@ -10,7 +10,7 @@ import net.sf.mxlosgi.xmpp.XMPPError;
  * @author noah
  *
  */
-public class BindResourceException extends XMPPException
+public class BindResourceException extends XmppException
 {
 
 	/**

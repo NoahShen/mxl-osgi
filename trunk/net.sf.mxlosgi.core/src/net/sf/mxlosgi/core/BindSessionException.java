@@ -9,7 +9,7 @@ import net.sf.mxlosgi.xmpp.XMPPError;
  * @author noah
  *
  */
-public class BindSessionException extends XMPPException
+public class BindSessionException extends XmppException
 {
 
 	/**

@@ -27,6 +27,14 @@ public class ConnectionConfig
 	}
 
 	/**
+	 * @param serviceName
+	 */
+	public ConnectionConfig(String serviceName)
+	{
+		this.serviceName = serviceName;
+	}
+
+	/**
 	 * 
 	 * @return
 	 */

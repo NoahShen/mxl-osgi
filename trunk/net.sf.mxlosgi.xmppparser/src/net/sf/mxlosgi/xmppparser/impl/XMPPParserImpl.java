@@ -32,7 +32,7 @@ import net.sf.mxlosgi.xmpp.XMPPError;
 import net.sf.mxlosgi.xmpp.StreamFeature.Feature;
 import net.sf.mxlosgi.xmppparser.ExtensionParser;
 import net.sf.mxlosgi.xmppparser.UnknownPacketExtension;
-import net.sf.mxlosgi.xmppparser.XMPPParser;
+import net.sf.mxlosgi.xmppparser.XmppParser;
 
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
@@ -43,7 +43,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * @author noah
  *
  */
-public class XMPPParserImpl implements XMPPParser
+public class XMPPParserImpl implements XmppParser
 {
 	private ExtensionParserServiceTracker extensionParserServiceTracker;
 	/**

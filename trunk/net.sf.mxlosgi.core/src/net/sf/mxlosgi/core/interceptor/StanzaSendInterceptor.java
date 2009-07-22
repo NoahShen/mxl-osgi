@@ -3,7 +3,7 @@
  */
 package net.sf.mxlosgi.core.interceptor;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.XMLStanza;
 
 
@@ -17,5 +17,5 @@ public interface StanzaSendInterceptor
 	 * @param connection
 	 * @param stanza
 	 */
-	public boolean interceptSendStanza(XMPPConnection connection, XMLStanza stanza);
+	public boolean interceptSendStanza(XmppConnection connection, XMLStanza stanza);
 }

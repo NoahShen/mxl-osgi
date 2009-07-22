@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.core.impl;
 
 import net.sf.mxlosgi.core.Future;
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 
 import org.apache.mina.common.WriteFuture;
 
@@ -17,14 +17,14 @@ public class SendFuture implements Future
 {
 	private WriteFuture writeFuture;
 	
-	private XMPPConnection connection;
+	private XmppConnection connection;
 	
 	private boolean intercepted = false;
 	/**
 	 * @param writeFuture
 	 * @param connection
 	 */
-	public SendFuture(XMPPConnection connection)
+	public SendFuture(XmppConnection connection)
 	{
 		this.connection = connection;
 	}
@@ -68,7 +68,7 @@ public class SendFuture implements Future
 	 * @see net.sf.mxlosgi.mxlosgimainbundle.Future#getConnection()
 	 */
 	@Override
-	public XMPPConnection getConnection()
+	public XmppConnection getConnection()
 	{
 		return connection;
 	}

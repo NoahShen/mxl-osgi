@@ -3,7 +3,7 @@
  */
 package net.sf.mxlosgi.core.listener;
 
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.Failure;
 import net.sf.mxlosgi.xmpp.StreamError;
 
@@ -16,47 +16,47 @@ public abstract class ConnectionAdapter implements ConnectionListener
 {
 
 	@Override
-	public void connectionCreated(XMPPConnection connection)
+	public void connectionCreated(XmppConnection connection)
 	{
 	}
 
 	@Override
-	public void connectionClosed(XMPPConnection connection)
+	public void connectionClosed(XmppConnection connection)
 	{
 	}
 
 	@Override
-	public void connectionConnected(XMPPConnection connection)
+	public void connectionConnected(XmppConnection connection)
 	{
 	}
 
 	@Override
-	public void exceptionCaught(XMPPConnection connection, Throwable cause)
+	public void exceptionCaught(XmppConnection connection, Throwable cause)
 	{
 	}
 
 	@Override
-	public void resourceBinded(XMPPConnection connection)
+	public void resourceBinded(XmppConnection connection)
 	{
 	}
 
 	@Override
-	public void saslFailed(XMPPConnection connection, Failure failure)
+	public void saslFailed(XmppConnection connection, Failure failure)
 	{
 	}
 
 	@Override
-	public void saslSuccessful(XMPPConnection connection)
+	public void saslSuccessful(XmppConnection connection)
 	{
 	}
 
 	@Override
-	public void sessionBinded(XMPPConnection connection)
+	public void sessionBinded(XmppConnection connection)
 	{
 	}
 	
 	@Override
-	public void connectionStreamError(XMPPConnection connection, StreamError streamError)
+	public void connectionStreamError(XmppConnection connection, StreamError streamError)
 	{
 	}
 

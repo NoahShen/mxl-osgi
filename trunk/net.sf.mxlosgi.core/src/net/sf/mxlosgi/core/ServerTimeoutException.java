@@ -10,7 +10,7 @@ import net.sf.mxlosgi.xmpp.XMPPError;
  * @author noah
  *
  */
-public class ServerTimeoutException extends XMPPException
+public class ServerTimeoutException extends XmppException
 {
 
 	/**

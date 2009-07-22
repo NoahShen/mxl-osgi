@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.core.impl;
 
 import net.sf.mxlosgi.core.Future;
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 
 
 /**
@@ -13,7 +13,7 @@ import net.sf.mxlosgi.core.XMPPConnection;
  */
 public class CloseFuture implements Future
 {
-	private XMPPConnection connection;
+	private XmppConnection connection;
 	
 	private org.apache.mina.common.CloseFuture future;
 	
@@ -23,7 +23,7 @@ public class CloseFuture implements Future
 	 * @param connection
 	 * @param future
 	 */
-	public CloseFuture(XMPPConnection connection, org.apache.mina.common.CloseFuture future)
+	public CloseFuture(XmppConnection connection, org.apache.mina.common.CloseFuture future)
 	{
 		this.connection = connection;
 		this.future = future;
@@ -48,7 +48,7 @@ public class CloseFuture implements Future
 	 * @see net.sf.mxlosgi.mxlosgimainbundle.Future#getConnection()
 	 */
 	@Override
-	public XMPPConnection getConnection()
+	public XmppConnection getConnection()
 	{
 		return connection;
 	}

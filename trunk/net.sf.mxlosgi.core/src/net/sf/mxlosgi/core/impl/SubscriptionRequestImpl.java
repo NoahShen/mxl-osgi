@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.core.impl;
 
 import net.sf.mxlosgi.core.SubscriptionRequest;
-import net.sf.mxlosgi.core.XMPPConnection;
+import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Presence;
 
@@ -18,9 +18,9 @@ public class SubscriptionRequestImpl implements SubscriptionRequest
 
 	private JID from;
 
-	private XMPPConnection connection;
+	private XmppConnection connection;
 
-	public SubscriptionRequestImpl(JID from, XMPPConnection connection)
+	public SubscriptionRequestImpl(JID from, XmppConnection connection)
 	{
 		this.from = from;
 		this.connection = connection;
