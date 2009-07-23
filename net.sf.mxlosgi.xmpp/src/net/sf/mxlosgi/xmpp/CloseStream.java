@@ -7,7 +7,7 @@ package net.sf.mxlosgi.xmpp;
  * @author noah
  *
  */
-public class CloseStream implements XMLStanza
+public class CloseStream implements XmlStanza
 {
 
 	/**

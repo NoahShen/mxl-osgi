@@ -13,10 +13,10 @@ import java.util.Set;
 import net.sf.mxlosgi.core.UserResource;
 import net.sf.mxlosgi.core.XmppContact;
 import net.sf.mxlosgi.utils.AbstractPropertied;
-import net.sf.mxlosgi.xmpp.IQRoster;
+import net.sf.mxlosgi.xmpp.IqRoster;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Presence;
-import net.sf.mxlosgi.xmpp.IQRoster.Item;
+import net.sf.mxlosgi.xmpp.IqRoster.Item;
 
 /**
  * @author noah
@@ -28,7 +28,7 @@ public class XmppContactImpl extends AbstractPropertied implements XmppContact
 	
 	private String name;
 	
-	private IQRoster.Item item;
+	private IqRoster.Item item;
 	
 	private Set<String> groups = Collections.synchronizedSet(new HashSet<String>());
 	
@@ -126,7 +126,7 @@ public class XmppContactImpl extends AbstractPropertied implements XmppContact
 		return !getResources().isEmpty();
 	}
 	
-	public void setItem(IQRoster.Item item)
+	public void setItem(IqRoster.Item item)
 	{
 		this.item = item;
 	}

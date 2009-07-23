@@ -10,10 +10,10 @@ import net.sf.mxlosgi.xmpp.Challenge;
 import net.sf.mxlosgi.xmpp.CloseStream;
 import net.sf.mxlosgi.xmpp.Compressed;
 import net.sf.mxlosgi.xmpp.Failure;
-import net.sf.mxlosgi.xmpp.IQ;
-import net.sf.mxlosgi.xmpp.IQBind;
-import net.sf.mxlosgi.xmpp.IQRoster;
-import net.sf.mxlosgi.xmpp.IQSession;
+import net.sf.mxlosgi.xmpp.Iq;
+import net.sf.mxlosgi.xmpp.IqBind;
+import net.sf.mxlosgi.xmpp.IqRoster;
+import net.sf.mxlosgi.xmpp.IqSession;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Message;
 import net.sf.mxlosgi.xmpp.Packet;
@@ -27,8 +27,8 @@ import net.sf.mxlosgi.xmpp.Stream;
 import net.sf.mxlosgi.xmpp.StreamError;
 import net.sf.mxlosgi.xmpp.StreamFeature;
 import net.sf.mxlosgi.xmpp.Success;
-import net.sf.mxlosgi.xmpp.XMLStanza;
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmlStanza;
+import net.sf.mxlosgi.xmpp.XmppError;
 import net.sf.mxlosgi.xmpp.StreamFeature.Feature;
 import net.sf.mxlosgi.xmppparser.ExtensionParser;
 import net.sf.mxlosgi.xmppparser.UnknownPacketExtension;
@@ -56,7 +56,7 @@ public class XMPPParserImpl implements XmppParser
 
 
 	@Override
-	public XMLStanza parseXML(String xml) throws Exception
+	public XmlStanza parseXML(String xml) throws Exception
 	{
 		XmlPullParser parser = new MXParser();
 		parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
@@ -159,7 +159,7 @@ public class XMPPParserImpl implements XmppParser
 		return null;
 	}
 
-	private XMLStanza parseStreamError(XmlPullParser parser) throws XmlPullParserException, IOException
+	private XmlStanza parseStreamError(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
 		StreamError streamError = new StreamError();
 		boolean done = false;
@@ -198,7 +198,7 @@ public class XMPPParserImpl implements XmppParser
 
 	}
 
-	private XMLStanza parseFailure(XmlPullParser parser) throws XmlPullParserException, IOException
+	private XmlStanza parseFailure(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
 		String  namespace = parser.getNamespace(null);
 		Failure failure = new Failure();
@@ -234,7 +234,7 @@ public class XMPPParserImpl implements XmppParser
 		return failure;
 	}
 
-	private XMLStanza parseStreamFeature(XmlPullParser parser) throws XmlPullParserException, IOException
+	private XmlStanza parseStreamFeature(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
 		StreamFeature streamFeature = new StreamFeature();
 
@@ -358,7 +358,7 @@ public class XMPPParserImpl implements XmppParser
 		return compressionMethod;
 	}
 
-	private XMLStanza parseMessage(XmlPullParser parser) throws Exception
+	private XmlStanza parseMessage(XmlPullParser parser) throws Exception
 	{
 		Message message = new Message();
 		
@@ -426,7 +426,7 @@ public class XMPPParserImpl implements XmppParser
 				}
 				else if ("error".equals(elementName))
 				{
-					XMPPError error = parseError(parser);
+					XmppError error = parseError(parser);
 					message.setError(error);
 				}
 				else 
@@ -456,7 +456,7 @@ public class XMPPParserImpl implements XmppParser
 		return message;
 	}
 
-	private XMLStanza parsePresence(XmlPullParser parser) throws Exception
+	private XmlStanza parsePresence(XmlPullParser parser) throws Exception
 	{
 		Presence.Type type = Presence.Type.available;
 		String strType = parser.getAttributeValue("", "type");
@@ -505,7 +505,7 @@ public class XMPPParserImpl implements XmppParser
 				}
 				else if ("error".equals(elementName))
 				{
-					XMPPError error = parseError(parser);
+					XmppError error = parseError(parser);
 					presence.setError(error);
 				}
 				else
@@ -535,7 +535,7 @@ public class XMPPParserImpl implements XmppParser
 		return presence;
 	}
 
-	private IQ parseIQ(XmlPullParser parser) throws Exception
+	private Iq parseIQ(XmlPullParser parser) throws Exception
 	{
 		String to = parser.getAttributeValue("", "to");
 		String from = parser.getAttributeValue("", "from");
@@ -543,7 +543,7 @@ public class XMPPParserImpl implements XmppParser
 		String id = parser.getAttributeValue("", "id");
 		String strType = parser.getAttributeValue("", "type");
 		
-		IQ iq = new IQ();
+		Iq iq = new Iq();
 		if (to != null && !to.isEmpty())
 		{
 			iq.setTo(new JID(to));
@@ -554,7 +554,7 @@ public class XMPPParserImpl implements XmppParser
 		}
 		iq.setLanguage(lang);
 		iq.setStanzaID(id == null ? Packet.ID_NOT_AVAILABLE : id);
-		iq.setType(IQ.Type.fromString(strType));
+		iq.setType(Iq.Type.fromString(strType));
 		
 		
 		boolean done = false;
@@ -569,17 +569,17 @@ public class XMPPParserImpl implements XmppParser
 				
 				if ("bind".equals(elementName))
 				{
-					IQBind bind = parseIQBind(parser);
+					IqBind bind = parseIQBind(parser);
 					iq.addExtension(bind);
 				}
 				else if ("session".equals(elementName))
 				{
-					IQSession iqSession = new IQSession();
+					IqSession iqSession = new IqSession();
 					iq.addExtension(iqSession);
 				}
 				else if ("query".equals(elementName) && "jabber:iq:roster".equals(namespace))
 				{
-					IQRoster iqRoster = parseIQRoster(parser);
+					IqRoster iqRoster = parseIQRoster(parser);
 					iq.addExtension(iqRoster);
 				}
 				else if ("query".equals(elementName) && "jabber:iq:privacy".equals(namespace))
@@ -589,7 +589,7 @@ public class XMPPParserImpl implements XmppParser
 				}
 				else if ("error".equals(elementName))
 				{
-					XMPPError error = parseError(parser);
+					XmppError error = parseError(parser);
 					iq.setError(error);
 				}
 				else
@@ -835,10 +835,10 @@ public class XMPPParserImpl implements XmppParser
 		return packetX;
 	}
 
-	private IQRoster parseIQRoster(XmlPullParser parser) throws XmlPullParserException, IOException
+	private IqRoster parseIQRoster(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
-		IQRoster iqRoster = new IQRoster();
-		IQRoster.Item item = null;
+		IqRoster iqRoster = new IqRoster();
+		IqRoster.Item item = null;
 		boolean done = false;
 		while (!done)
 		{
@@ -854,11 +854,11 @@ public class XMPPParserImpl implements XmppParser
 					String subscription = parser.getAttributeValue("", "subscription");
 					String ask = parser.getAttributeValue("", "ask");
 					
-					item = new IQRoster.Item(new JID(jid), name);
-					item.setSubscription(IQRoster.Subscription.valueOf(subscription));
+					item = new IqRoster.Item(new JID(jid), name);
+					item.setSubscription(IqRoster.Subscription.valueOf(subscription));
 					if (ask != null && !ask.isEmpty())
 					{
-						item.setAsk(IQRoster.Ask.fromString(ask));
+						item.setAsk(IqRoster.Ask.fromString(ask));
 					}
 				}
 				else if ("group".equals(elementName) && item != null)
@@ -885,9 +885,9 @@ public class XMPPParserImpl implements XmppParser
 		return iqRoster;
 	}
 
-	private IQBind parseIQBind(XmlPullParser parser) throws XmlPullParserException, IOException
+	private IqBind parseIQBind(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
-		IQBind bind = new IQBind();
+		IqBind bind = new IqBind();
 		boolean done = false;
 		while (!done)
 		{
@@ -930,7 +930,7 @@ public class XMPPParserImpl implements XmppParser
 		return null;
 	}
 	
-	private XMLStanza parseStream(XmlPullParser parser) throws XmlPullParserException, IOException
+	private XmlStanza parseStream(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
 		
 		String xmlns = parser.getNamespace(null);
@@ -965,19 +965,19 @@ public class XMPPParserImpl implements XmppParser
 		return null;
 	}
 
-	private XMPPError parseError(XmlPullParser parser) throws XmlPullParserException, IOException
+	private XmppError parseError(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
-		XMPPError error = new XMPPError();
+		XmppError error = new XmppError();
 		String code = parser.getAttributeValue("", "code");
 		if (code != null && !code.isEmpty())
 		{
 			error.setCode(Integer.parseInt(code));
 		}
-		XMPPError.Type type = null;
+		XmppError.Type type = null;
 		String strType = parser.getAttributeValue("", "type");
 		if (strType != null && !strType.isEmpty())
 		{
-			type = XMPPError.Type.valueOf(strType.toUpperCase());
+			type = XmppError.Type.valueOf(strType.toUpperCase());
 			error.setType(type);
 		}
 
@@ -990,101 +990,101 @@ public class XMPPParserImpl implements XmppParser
 			String namespace = parser.getNamespace(null);
 			if (eventType == XmlPullParser.START_TAG)
 			{
-				if (XMPPError.Condition.bad_request.toString().equals(parser.getName()))
+				if (XmppError.Condition.bad_request.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.bad_request);
+					error = new XmppError(XmppError.Condition.bad_request);
 				}
-				else if (XMPPError.Condition.conflict.toString().equals(parser.getName()))
+				else if (XmppError.Condition.conflict.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.conflict);
+					error = new XmppError(XmppError.Condition.conflict);
 				}
-				else if (XMPPError.Condition.feature_not_implemented.toString().equals(parser.getName()))
+				else if (XmppError.Condition.feature_not_implemented.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.feature_not_implemented);
+					error = new XmppError(XmppError.Condition.feature_not_implemented);
 				}
-				else if (XMPPError.Condition.forbidden.toString().equals(parser.getName()))
+				else if (XmppError.Condition.forbidden.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.forbidden);
+					error = new XmppError(XmppError.Condition.forbidden);
 				}
-				else if (XMPPError.Condition.gone.toString().equals(parser.getName()))
+				else if (XmppError.Condition.gone.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.gone);
+					error = new XmppError(XmppError.Condition.gone);
 				}
-				else if (XMPPError.Condition.internal_server_error.toString().equals(parser.getName()))
+				else if (XmppError.Condition.internal_server_error.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.internal_server_error);
+					error = new XmppError(XmppError.Condition.internal_server_error);
 				}
-				else if (XMPPError.Condition.item_not_found.toString().equals(parser.getName()))
+				else if (XmppError.Condition.item_not_found.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.item_not_found);
+					error = new XmppError(XmppError.Condition.item_not_found);
 				}
-				else if (XMPPError.Condition.jid_malformed.toString().equals(parser.getName()))
+				else if (XmppError.Condition.jid_malformed.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.jid_malformed);
+					error = new XmppError(XmppError.Condition.jid_malformed);
 				}
-				else if (XMPPError.Condition.no_acceptable.toString().equals(parser.getName()))
+				else if (XmppError.Condition.no_acceptable.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.no_acceptable);
+					error = new XmppError(XmppError.Condition.no_acceptable);
 				}
-				else if (XMPPError.Condition.not_allowed.toString().equals(parser.getName()))
+				else if (XmppError.Condition.not_allowed.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.not_allowed);
+					error = new XmppError(XmppError.Condition.not_allowed);
 				}
-				else if (XMPPError.Condition.not_authorized.toString().equals(parser.getName()))
+				else if (XmppError.Condition.not_authorized.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.not_authorized);
+					error = new XmppError(XmppError.Condition.not_authorized);
 				}
-				else if (XMPPError.Condition.payment_required.toString().equals(parser.getName()))
+				else if (XmppError.Condition.payment_required.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.payment_required);
+					error = new XmppError(XmppError.Condition.payment_required);
 				}
-				else if (XMPPError.Condition.recipient_unavailable.toString().equals(parser.getName()))
+				else if (XmppError.Condition.recipient_unavailable.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.recipient_unavailable);
+					error = new XmppError(XmppError.Condition.recipient_unavailable);
 				}
-				else if (XMPPError.Condition.redirect.toString().equals(parser.getName()))
+				else if (XmppError.Condition.redirect.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.redirect);
+					error = new XmppError(XmppError.Condition.redirect);
 				}
-				else if (XMPPError.Condition.registration_required.toString().equals(parser.getName()))
+				else if (XmppError.Condition.registration_required.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.registration_required);
+					error = new XmppError(XmppError.Condition.registration_required);
 				}
-				else if (XMPPError.Condition.remote_server_error.toString().equals(parser.getName()))
+				else if (XmppError.Condition.remote_server_error.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.remote_server_error);
+					error = new XmppError(XmppError.Condition.remote_server_error);
 				}
-				else if (XMPPError.Condition.remote_server_not_found.toString().equals(parser.getName()))
+				else if (XmppError.Condition.remote_server_not_found.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.remote_server_not_found);
+					error = new XmppError(XmppError.Condition.remote_server_not_found);
 				}
-				else if (XMPPError.Condition.remote_server_timeout.toString().equals(parser.getName()))
+				else if (XmppError.Condition.remote_server_timeout.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.remote_server_timeout);
+					error = new XmppError(XmppError.Condition.remote_server_timeout);
 				}
-				else if (XMPPError.Condition.request_timeout.toString().equals(parser.getName()))
+				else if (XmppError.Condition.request_timeout.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.request_timeout);
+					error = new XmppError(XmppError.Condition.request_timeout);
 				}
-				else if (XMPPError.Condition.resource_constraint.toString().equals(parser.getName()))
+				else if (XmppError.Condition.resource_constraint.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.resource_constraint);
+					error = new XmppError(XmppError.Condition.resource_constraint);
 				}
-				else if (XMPPError.Condition.service_unavailable.toString().equals(parser.getName()))
+				else if (XmppError.Condition.service_unavailable.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.service_unavailable);
+					error = new XmppError(XmppError.Condition.service_unavailable);
 				}
-				else if (XMPPError.Condition.subscription_required.toString().equals(parser.getName()))
+				else if (XmppError.Condition.subscription_required.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.subscription_required);
+					error = new XmppError(XmppError.Condition.subscription_required);
 				}
-				else if (XMPPError.Condition.undefined_condition.toString().equals(parser.getName()))
+				else if (XmppError.Condition.undefined_condition.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.undefined_condition);
+					error = new XmppError(XmppError.Condition.undefined_condition);
 				}
-				else if (XMPPError.Condition.unexpected_condition.toString().equals(parser.getName()))
+				else if (XmppError.Condition.unexpected_condition.toString().equals(parser.getName()))
 				{
-					error = new XMPPError(XMPPError.Condition.unexpected_condition);
+					error = new XmppError(XmppError.Condition.unexpected_condition);
 				}
 				else if ("text".equals(parser.getName()))
 				{
@@ -1106,5 +1106,13 @@ public class XMPPParserImpl implements XmppParser
 		}
 
 		return error;
+	}
+
+
+	@Override
+	public ExtensionParser getExtensionParser(String elementName, String namespace)
+	{
+		ExtensionParser xparser = extensionParserServiceTracker.getExtensionParser(elementName, namespace);
+		return xparser;
 	}
 }

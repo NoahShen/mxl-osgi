@@ -5,7 +5,7 @@ package net.sf.mxlosgi.xmpp;
  * @author noah
  *
  */
-public class Auth implements XMLStanza
+public class Auth implements XmlStanza
 {
 	/**
 	 * 

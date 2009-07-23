@@ -3,7 +3,7 @@
  */
 package net.sf.mxlosgi.core;
 
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmppError;
 
 /**
  * @author noah
@@ -53,7 +53,7 @@ public class BindSessionException extends XmppException
 	/**
 	 * @param error
 	 */
-	public BindSessionException(XMPPError error)
+	public BindSessionException(XmppError error)
 	{
 		super(error);
 	}

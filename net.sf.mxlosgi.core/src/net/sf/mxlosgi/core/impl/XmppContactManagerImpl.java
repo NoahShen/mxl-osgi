@@ -7,6 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import net.sf.mxlosgi.core.ServerTimeoutException;
 import net.sf.mxlosgi.core.StanzaCollector;
 import net.sf.mxlosgi.core.UserResource;
@@ -15,11 +19,11 @@ import net.sf.mxlosgi.core.XmppContact;
 import net.sf.mxlosgi.core.XmppContactManager;
 import net.sf.mxlosgi.core.XmppException;
 import net.sf.mxlosgi.core.filter.PacketIDFilter;
-import net.sf.mxlosgi.xmpp.IQ;
-import net.sf.mxlosgi.xmpp.IQRoster;
+import net.sf.mxlosgi.xmpp.Iq;
+import net.sf.mxlosgi.xmpp.IqRoster;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Presence;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 
 /**
@@ -28,6 +32,8 @@ import net.sf.mxlosgi.xmpp.XMLStanza;
  */
 public class XmppContactManagerImpl implements XmppContactManager
 {
+	private final Logger logger = LoggerFactory.getLogger(XmppContactManagerImpl.class);
+	
 	private XmppConnection connection;
 	
 	private final Map<JID, XmppContact> contacts = Collections.synchronizedMap(new HashMap<JID, XmppContact>());
@@ -60,15 +66,18 @@ public class XmppContactManagerImpl implements XmppContactManager
 	}
 
 
-	void updateContact(IQRoster iqRoster)
+	void updateContact(IqRoster iqRoster)
 	{
-		for (IQRoster.Item item  : iqRoster.getRosterItems())
+		for (IqRoster.Item item  : iqRoster.getRosterItems())
 		{
-			IQRoster.Subscription subs = item.getSubscription();
+			IqRoster.Subscription subs = item.getSubscription();
 			JID jid = item.getJid();
-			if (subs == IQRoster.Subscription.remove)
+			if (subs == IqRoster.Subscription.remove)
 			{
 				contacts.remove(jid);
+				
+				logger.debug(jid + " has been removed");
+				
 				contactListenerServiceTracker.fireContactRemoved(connection, jid);
 			}
 			else
@@ -84,6 +93,8 @@ public class XmppContactManagerImpl implements XmppContactManager
 				contactImpl.clearGroup();
 				contactImpl.addGroups(item.getGroupNames());
 				contacts.put(jid, contact);
+				
+				logger.debug(jid + " has been updated");
 				
 				contactListenerServiceTracker.fireContactUpdated(connection, contact);
 			}
@@ -101,16 +112,18 @@ public class XmppContactManagerImpl implements XmppContactManager
 			return;
 		}
 		
-		IQ iq = new IQ(IQ.Type.set);
-		IQRoster roster = new IQRoster();
-		IQRoster.Item item = new IQRoster.Item(jid);
-		item.setSubscription(IQRoster.Subscription.remove);
+		logger.debug("removeing " + jid);
+		
+		Iq iq = new Iq(Iq.Type.set);
+		IqRoster roster = new IqRoster();
+		IqRoster.Item item = new IqRoster.Item(jid);
+		item.setSubscription(IqRoster.Subscription.remove);
 		roster.addRosterItem(item);
 		iq.addExtension(roster);
 		
 		StanzaCollector collector = connection.createStanzaCollector(new PacketIDFilter(iq.getStanzaID()));
 		connection.sendStanza(iq);
-		XMLStanza stanza = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
+		XmlStanza stanza = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
 		collector.cancel();
 		
 		if (stanza == null)
@@ -118,14 +131,17 @@ public class XmppContactManagerImpl implements XmppContactManager
 			throw new ServerTimeoutException("remote server no response");
 		}
 		
-		if (stanza instanceof IQ)
+		if (stanza instanceof Iq)
 		{
-			IQ iqResponse = (IQ) stanza;
-			IQ.Type type = iqResponse.getType();
-			if (type == IQ.Type.error)
+			Iq iqResponse = (Iq) stanza;
+			Iq.Type type = iqResponse.getType();
+			if (type == Iq.Type.error)
 			{
+				logger.debug("remove " + jid + " failed");
 				throw new XmppException(iqResponse.getError());
 			}
+			
+			logger.debug("remove " + jid + " completed");
 		}
 	}
 
@@ -133,9 +149,11 @@ public class XmppContactManagerImpl implements XmppContactManager
 	@Override
 	public void addContact(JID jid, String name, String... groups) throws XmppException
 	{
-		IQ iq = new IQ(IQ.Type.set);
-		IQRoster roster = new IQRoster();
-		IQRoster.Item item = new IQRoster.Item(jid);
+		logger.debug("adding " + jid);
+		
+		Iq iq = new Iq(Iq.Type.set);
+		IqRoster roster = new IqRoster();
+		IqRoster.Item item = new IqRoster.Item(jid);
 		item.setName(name);
 		for (String group : groups)
 		{
@@ -146,22 +164,26 @@ public class XmppContactManagerImpl implements XmppContactManager
 		
 		StanzaCollector collector = connection.createStanzaCollector(new PacketIDFilter(iq.getStanzaID()));
 		connection.sendStanza(iq);
-		XMLStanza data = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
+		XmlStanza data = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
 		collector.cancel();
 		
 		if (data == null)
 		{
+			logger.debug("adding " + jid + " failed");
 			throw new ServerTimeoutException("remote server no response");
 		}
 		
-		if (data instanceof IQ)
+		if (data instanceof Iq)
 		{
-			IQ iqResponse = (IQ) data;
-			IQ.Type type = iqResponse.getType();
-			if (type == IQ.Type.error)
+			Iq iqResponse = (Iq) data;
+			Iq.Type type = iqResponse.getType();
+			if (type == Iq.Type.error)
 			{
+				logger.debug("adding " + jid + " failed");
 				throw new XmppException(iqResponse.getError());
 			}
+			
+			logger.debug("adding " + jid + " completed");
 		}
 	}
 
@@ -206,9 +228,11 @@ public class XmppContactManagerImpl implements XmppContactManager
 			return;
 		}
 		
-		IQ iq = new IQ(IQ.Type.set);
-		IQRoster roster = new IQRoster();
-		IQRoster.Item item = new IQRoster.Item(jid);
+		logger.debug("updating " + jid + " name");
+		
+		Iq iq = new Iq(Iq.Type.set);
+		IqRoster roster = new IqRoster();
+		IqRoster.Item item = new IqRoster.Item(jid);
 		
 		if (name == null)
 		{
@@ -227,22 +251,26 @@ public class XmppContactManagerImpl implements XmppContactManager
 		
 		StanzaCollector collector = connection.createStanzaCollector(new PacketIDFilter(iq.getStanzaID()));
 		connection.sendStanza(iq);
-		XMLStanza stanza = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
+		XmlStanza stanza = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
 		collector.cancel();
 		
 		if (stanza == null)
 		{
+			logger.debug("updating " + jid + " name failed");
 			throw new ServerTimeoutException("remote server no response");
 		}
 		
-		if (stanza instanceof IQ)
+		if (stanza instanceof Iq)
 		{
-			IQ iqResponse = (IQ) stanza;
-			IQ.Type type = iqResponse.getType();
-			if (type == IQ.Type.error)
+			Iq iqResponse = (Iq) stanza;
+			Iq.Type type = iqResponse.getType();
+			if (type == Iq.Type.error)
 			{
+				logger.debug("updating " + jid + " name failed");
 				throw new XmppException(iqResponse.getError());
 			}
+			
+			logger.debug("updating " + jid + " name completed");
 		}
 	}
 
@@ -254,9 +282,11 @@ public class XmppContactManagerImpl implements XmppContactManager
 			return;
 		}
 		
-		IQ iq = new IQ(IQ.Type.set);
-		IQRoster roster = new IQRoster();
-		IQRoster.Item item = new IQRoster.Item(jid);
+		logger.debug("updating " + jid + " group");
+		
+		Iq iq = new Iq(Iq.Type.set);
+		IqRoster roster = new IqRoster();
+		IqRoster.Item item = new IqRoster.Item(jid);
 		for (String group : groups)
 		{
 			if (group != null)
@@ -270,22 +300,27 @@ public class XmppContactManagerImpl implements XmppContactManager
 		
 		StanzaCollector collector = connection.createStanzaCollector(new PacketIDFilter(iq.getStanzaID()));
 		connection.sendStanza(iq);
-		XMLStanza data = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
+		XmlStanza data = collector.nextResult(connection.getConnectionConfig().getResponseStanzaTimeout());
 		collector.cancel();
 		
 		if (data == null)
 		{
+			logger.debug("updating " + jid + " group failed");
+			
 			throw new ServerTimeoutException("remote server no response");
 		}
 		
-		if (data instanceof IQ)
+		if (data instanceof Iq)
 		{
-			IQ iqResponse = (IQ) data;
-			IQ.Type type = iqResponse.getType();
-			if (type == IQ.Type.error)
+			Iq iqResponse = (Iq) data;
+			Iq.Type type = iqResponse.getType();
+			if (type == Iq.Type.error)
 			{
+				logger.debug("updating " + jid + " group failed");
 				throw new XmppException(iqResponse.getError());
 			}
+			
+			logger.debug("updating " + jid + " group completed");
 		}
 	}
 	
@@ -327,6 +362,7 @@ public class XmppContactManagerImpl implements XmppContactManager
 			return;
 		}
 		
+		
 		XmppContactImpl contactImpl = (XmppContactImpl) contact;
 		UserResource userResource = contactImpl.getResource(resource);
 		if (userResource == null)
@@ -342,6 +378,9 @@ public class XmppContactManagerImpl implements XmppContactManager
 		{
 			contactImpl.removeResource(userResource.getResource());
 		}
+		
+		logger.debug(jid + " status changed");
+		
 		contactListenerServiceTracker.fireContactStatusChanged(connection, contact, userResource);
 	}
 
@@ -352,8 +391,8 @@ public class XmppContactManagerImpl implements XmppContactManager
 	
 	void queryRoster()
 	{
-		IQ iq = new IQ(IQ.Type.get);
-		IQRoster roster = new IQRoster();
+		Iq iq = new Iq(Iq.Type.get);
+		IqRoster roster = new IqRoster();
 		iq.addExtension(roster);
 
 		connection.sendStanza(iq);

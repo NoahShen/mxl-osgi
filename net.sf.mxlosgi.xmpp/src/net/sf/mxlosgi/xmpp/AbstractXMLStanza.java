@@ -11,7 +11,7 @@ import net.sf.mxlosgi.utils.StringUtils;
  * @author noah
  * 
  */
-public abstract class AbstractXMLStanza implements XMLStanza
+public abstract class AbstractXMLStanza implements XmlStanza
 {
 	/**
 	 * Constant used as packetID to indicate that a packet has no id. To

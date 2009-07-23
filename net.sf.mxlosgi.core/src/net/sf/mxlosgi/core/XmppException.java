@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.core;
 
 import net.sf.mxlosgi.xmpp.StreamError;
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmppError;
 
 
 /**
@@ -19,14 +19,14 @@ public class XmppException extends Exception
 	 */
 	private static final long serialVersionUID = -2059295743079750074L;
 	
-	protected XMPPError error;
+	protected XmppError error;
 	
 	protected StreamError streamError;
 	
 	/**
 	 * @param error
 	 */
-	public XmppException(XMPPError error)
+	public XmppException(XmppError error)
 	{
 		this.error = error;
 	}
@@ -72,12 +72,12 @@ public class XmppException extends Exception
 		this.streamError = streamError;
 	}
 
-	public XMPPError getError()
+	public XmppError getError()
 	{
 		return error;
 	}
 
-	public void setError(XMPPError error)
+	public void setError(XmppError error)
 	{
 		this.error = error;
 	}

@@ -3,7 +3,7 @@
  */
 package net.sf.mxlosgi.core;
 
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmppError;
 
 
 /**
@@ -54,7 +54,7 @@ public class TlsRequiredExcetpion extends XmppException
 	/**
 	 * @param error
 	 */
-	public TlsRequiredExcetpion(XMPPError error)
+	public TlsRequiredExcetpion(XmppError error)
 	{
 		super(error);
 	}

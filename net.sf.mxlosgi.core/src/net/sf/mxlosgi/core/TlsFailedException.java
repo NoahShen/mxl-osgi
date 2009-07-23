@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.core;
 
 import net.sf.mxlosgi.xmpp.Failure;
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmppError;
 
 
 /**
@@ -57,7 +57,7 @@ public class TlsFailedException extends XmppException
 	/**
 	 * @param error
 	 */
-	public TlsFailedException(XMPPError error)
+	public TlsFailedException(XmppError error)
 	{
 		super(error);
 	}

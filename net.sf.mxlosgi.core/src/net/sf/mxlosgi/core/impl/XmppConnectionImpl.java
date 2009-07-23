@@ -26,6 +26,8 @@ import org.apache.mina.filter.SSLFilter;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketConnector;
 import org.apache.mina.transport.socket.nio.SocketConnectorConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sf.mxlosgi.core.BindResourceException;
 import net.sf.mxlosgi.core.BindSessionException;
@@ -51,21 +53,21 @@ import net.sf.mxlosgi.xmpp.CloseStream;
 import net.sf.mxlosgi.xmpp.Compress;
 import net.sf.mxlosgi.xmpp.Compressed;
 import net.sf.mxlosgi.xmpp.Failure;
-import net.sf.mxlosgi.xmpp.IQ;
-import net.sf.mxlosgi.xmpp.IQBind;
-import net.sf.mxlosgi.xmpp.IQRoster;
-import net.sf.mxlosgi.xmpp.IQSession;
+import net.sf.mxlosgi.xmpp.Iq;
+import net.sf.mxlosgi.xmpp.IqBind;
+import net.sf.mxlosgi.xmpp.IqRoster;
+import net.sf.mxlosgi.xmpp.IqSession;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.PacketExtension;
 import net.sf.mxlosgi.xmpp.Presence;
 import net.sf.mxlosgi.xmpp.Proceed;
 import net.sf.mxlosgi.xmpp.Response;
-import net.sf.mxlosgi.xmpp.StartTLS;
+import net.sf.mxlosgi.xmpp.StartTls;
 import net.sf.mxlosgi.xmpp.Stream;
 import net.sf.mxlosgi.xmpp.StreamError;
 import net.sf.mxlosgi.xmpp.StreamFeature;
 import net.sf.mxlosgi.xmpp.Success;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 import net.sf.mxlosgi.xmpp.StreamFeature.Feature;
 
 /**
@@ -74,6 +76,8 @@ import net.sf.mxlosgi.xmpp.StreamFeature.Feature;
  */
 public class XmppConnectionImpl extends AbstractPropertied implements XmppConnection, IoHandler
 {
+	
+	private final Logger logger = LoggerFactory.getLogger(XmppConnectionImpl.class);
 	
 	private XmppOwnerImpl owner;
 	
@@ -187,6 +191,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 		
 		}
 		
+		logger.info("start connecting to " + serviceName);
+		
 		executorService.execute(new Runnable(){
 
 			@Override
@@ -207,6 +213,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 			
 		});
 		
+		
+		
 		connectFuture = new ConnectFuture(this);
 		return connectFuture;
 	}
@@ -216,6 +224,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	{
 		StanzaCollector collector = new StanzaCollectorImpl(this, stanzaFilter);
 		collectors.add(collector);
+		
+		logger.info(stanzaFilter + " filter created");
 		
 		return collector;
 	}
@@ -229,6 +239,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	@Override
 	public synchronized Future close(Presence unavailablePresence)
 	{
+		logger.info("closing connection" + getConnectionConfig().getServiceName() + "(" + getConnectionID() + ")");
 		if (iosession == null || !iosession.isConnected())
 		{
 			return closeFurture;
@@ -344,6 +355,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 		{
 			throw new IllegalStateException("not connected");
 		}
+		
 		if (isAuthenticated())
 		{
 			throw new IllegalStateException("sasl has completed");
@@ -362,6 +374,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 			throw new NullPointerException("resource is null");
 		}
 		
+		logger.info("login to " + getConnectionConfig().getServiceName());
+		
 		this.inputedLoginUsername = username;
 		this.inputedLoginResource = resource;
 		this.password = password;
@@ -379,6 +393,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 				currentsSASLMechanism = saslMechanismServiceTracker.getSaslMechanism(upperMechanism);
 				if (currentsSASLMechanism != null)
 				{
+					logger.info("using " + currentsSASLMechanism.getName() + " SaslMechanism");
 					handleSASL(currentsSASLMechanism);
 					
 					return loginFuture;
@@ -394,6 +409,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 			return loginFuture;
 		}
 		
+		logger.info("using " + currentsSASLMechanism.getName() + " SaslMechanism");
 		handleSASL(currentsSASLMechanism);
 		return loginFuture;
 	}
@@ -408,6 +424,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 		}
 		catch (Exception e)
 		{
+			logger.debug("sasl failed" + e.getMessage());
 			connectionListenerServiceTracker.fireExceptionCaught(this, e);
 			return;
 		}
@@ -416,7 +433,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	}
 
 	@Override
-	public synchronized Future sendStanza(XMLStanza stanza)
+	public synchronized Future sendStanza(XmlStanza stanza)
 	{
 		sendFuture = new SendFuture(this);
 		if (iosession == null || !iosession.isConnected())
@@ -436,6 +453,7 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	void cancelStanzaCollector(StanzaCollector stanzaCollector)
 	{
 		collectors.remove(stanzaCollector);
+		logger.debug("cancel " + stanzaCollector);
 	}
 
 	private void resetState()
@@ -449,6 +467,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 		sessionBinded = false;
 		resourceBinded = false;
 		usingCompression = false;
+		
+		logger.debug("reset state");
 	}
 	
 	
@@ -488,6 +508,12 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception
 	{
+		if (logger.isDebugEnabled())
+		{
+			cause.printStackTrace();
+			logger.debug(getConnectionConfig().getServiceName() + "(" + getConnectionID() + ") exceptionCaught" + cause);
+		}
+		
 		notifyConnectFuture();
 		notifyLoginFuture();
 		notifyCloseFuture();
@@ -500,6 +526,9 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	{
 		if (message instanceof String)
 		{
+			logger.debug(getConnectionConfig().getServiceName() + 
+						"(" + getConnectionID() + ") receive message:" + message);
+			
 			String xml = message.toString();
 			handleXML(xml);
 		}
@@ -516,8 +545,13 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 			return;
 		}
 
-		XMLStanza stanza = xmppParserServiceTracker.getParser().parseXML(xml);
+		logger.debug(getConnectionConfig().getServiceName() + 
+				"(" + getConnectionID() + ") parsing xml");
+	
+		XmlStanza stanza = xmppParserServiceTracker.getParser().parseXML(xml);
 
+		logger.debug(getConnectionConfig().getServiceName() + 
+				"(" + getConnectionID() + ") parse xml completed");
 		if (stanza == null)
 		{
 			return;
@@ -580,19 +614,19 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 		{
 			handlePresence((Presence) stanza);
 		}
-		else if (stanza instanceof IQ)
+		else if (stanza instanceof Iq)
 		{
-			handleIQ((IQ) stanza);
+			handleIQ((Iq) stanza);
 		}
 	}
 
 
-	private void handleIQ(IQ iq)
+	private void handleIQ(Iq iq)
 	{
 		PacketExtension extension = iq.getExtension("query", "jabber:iq:roster");
-		if (extension != null && iq.getType() == IQ.Type.result)
+		if (extension != null && iq.getType() == Iq.Type.result)
 		{
-			((XmppContactManagerImpl)getContactManager()).updateContact((IQRoster) extension);
+			((XmppContactManagerImpl)getContactManager()).updateContact((IqRoster) extension);
 		}
 	}
 
@@ -642,6 +676,10 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	private void handleSASLSuccess()
 	{
 		authenticated = true;
+		
+		logger.info(getConnectionConfig().getServiceName() + 
+				"(" + getConnectionID() + ") sasl success");
+		
 		connectionListenerServiceTracker.fireSaslSuccess(this);
 		openStream();
 	}
@@ -651,6 +689,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	{
 		try
 		{
+			logger.info(getConnectionConfig().getServiceName() + 
+					"(" + getConnectionID() + ") starting tls");
 			SSLContext context = SSLContext.getInstance("TLS");
 			context.init(null, 
 					new javax.net.ssl.TrustManager[] { new ServerTrustManager(getConnectionConfig().getServiceName()) }, 
@@ -756,6 +796,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 		
 		notifyConnectFuture();
 		
+		logger.info(getConnectionConfig().getServiceName() + 
+				"(" + getConnectionID() + ") connected");
 		connectionListenerServiceTracker.fireConnected(this);
 	}
 	
@@ -774,21 +816,28 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 
 	private void startCompress(final String compressionMethod) throws ServerTimeoutException, CompressFailureException
 	{
+
 		executorService.execute(new Runnable(){
 
 			@Override
 			public void run()
 			{
+				logger.info(getConnectionConfig().getServiceName() + 
+						"(" + getConnectionID() + ") start compress");
+				
 				Compress compress = new Compress(compressionMethod);
 				
 				StanzaCollector collector = createStanzaCollector(null);
 				sendStanza(compress);
 				
-				XMLStanza stanza = collector.nextResult(getConnectionConfig().getResponseStanzaTimeout());
+				XmlStanza stanza = collector.nextResult(getConnectionConfig().getResponseStanzaTimeout());
 				collector.cancel();
 				
 				if (stanza == null)
 				{
+					logger.error(getConnectionConfig().getServiceName() + 
+							"(" + getConnectionID() + ") compress failed");
+					
 					connectionListenerServiceTracker.fireExceptionCaught(XmppConnectionImpl.this, 
 							new ServerTimeoutException("remote server no response"));
 					return;
@@ -800,10 +849,17 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 								"compression", 
 								new CompressionFilter(true, true, CompressionFilter.COMPRESSION_MAX));
 					usingCompression = true;
+					
+					logger.info(getConnectionConfig().getServiceName() + 
+							"(" + getConnectionID() + ") compress completed");
+					
 					openStream();
 				}
 				else if (stanza instanceof Failure)
 				{
+					logger.error(getConnectionConfig().getServiceName() + 
+							"(" + getConnectionID() + ") compress failed");
+					
 					connectionListenerServiceTracker.fireExceptionCaught(XmppConnectionImpl.this, 
 							new CompressFailureException((Failure) stanza));
 				}
@@ -816,20 +872,23 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	private void bindResource(final StreamFeature streamFeature) throws ServerTimeoutException, 
 													BindResourceException, 
 													BindSessionException
-	{
+	{		
 		executorService.execute(new Runnable(){
 
 			@Override
 			public void run()
 			{
-				IQ iq = new IQ(IQ.Type.set);
-				IQBind bind = new IQBind();
+				logger.info(getConnectionConfig().getServiceName() + 
+						"(" + getConnectionID() + ") start binding resource");
+				
+				Iq iq = new Iq(Iq.Type.set);
+				IqBind bind = new IqBind();
 				bind.setResource(inputedLoginResource);
 				iq.addExtension(bind);
 
 				StanzaCollector collector = createStanzaCollector(new PacketIDFilter(iq.getStanzaID()));
 				sendStanza(iq);
-				XMLStanza stanza = collector.nextResult(getConnectionConfig().getResponseStanzaTimeout());
+				XmlStanza stanza = collector.nextResult(getConnectionConfig().getResponseStanzaTimeout());
 				collector.cancel();
 
 				if (stanza == null)
@@ -839,16 +898,20 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 					return;
 				}
 
-				if (stanza instanceof IQ)
+				if (stanza instanceof Iq)
 				{
-					IQ iqResponse = (IQ) stanza;
-					IQ.Type type = iqResponse.getType();
-					if (type == IQ.Type.result)
+					Iq iqResponse = (Iq) stanza;
+					Iq.Type type = iqResponse.getType();
+					if (type == Iq.Type.result)
 					{
-						IQBind iqBind = (IQBind) iqResponse.getExtension("bind", "urn:ietf:params:xml:ns:xmpp-bind");
+						IqBind iqBind = (IqBind) iqResponse.getExtension("bind", "urn:ietf:params:xml:ns:xmpp-bind");
 						JID jid = iqBind.getJid();
 						XmppConnectionImpl.this.jid = jid;
 						resourceBinded = true;
+						
+						logger.info(getConnectionConfig().getServiceName() + 
+								"(" + getConnectionID() + ") bind resource success");
+						
 						connectionListenerServiceTracker.fireResourceBinded(XmppConnectionImpl.this);
 						for (StreamFeature.Feature feature : streamFeature.getFeatures())
 						{
@@ -857,18 +920,31 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 							{
 								try
 								{
+									logger.info(getConnectionConfig().getServiceName() + 
+											"(" + getConnectionID() + ") start binding session");
+									
 									bindSession();
+									
+									
+									logger.info(getConnectionConfig().getServiceName() + 
+											"(" + getConnectionID() + ") bind session complete");
 								}
 								catch (Exception e)
 								{
+									logger.error(getConnectionConfig().getServiceName() + 
+											"(" + getConnectionID() + ") bind session failed");
+									
 									connectionListenerServiceTracker.fireExceptionCaught(XmppConnectionImpl.this, e);
 									return;
 								}
 							}
 						}
 					}
-					else if (type == IQ.Type.error)
+					else if (type == Iq.Type.error)
 					{
+						logger.error(getConnectionConfig().getServiceName() + 
+								"(" + getConnectionID() + ") bind resource failed");
+						
 						connectionListenerServiceTracker.fireExceptionCaught(XmppConnectionImpl.this, 
 													new BindResourceException(iqResponse.getError()));
 					}
@@ -881,29 +957,28 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 
 
 	private void bindSession() throws ServerTimeoutException, BindSessionException
-	{
-		IQ iq = new IQ(IQ.Type.set);
-		IQSession session = new IQSession();
+	{		
+		Iq iq = new Iq(Iq.Type.set);
+		IqSession session = new IqSession();
 		iq.addExtension(session);
 		StanzaCollector collector = createStanzaCollector(new PacketIDFilter(iq.getStanzaID()));
 		sendStanza(iq);
-		XMLStanza stanza = collector.nextResult(getConnectionConfig().getResponseStanzaTimeout());
+		XmlStanza stanza = collector.nextResult(getConnectionConfig().getResponseStanzaTimeout());
 		collector.cancel();
 		
 		if (stanza == null)
 		{
 			throw new ServerTimeoutException("remote server no response");
 		}
-		if (stanza instanceof IQ)
+		if (stanza instanceof Iq)
 		{
-			IQ iqResponse = (IQ) stanza;
-			IQ.Type type = iqResponse.getType();
-			if (type == IQ.Type.result)
+			Iq iqResponse = (Iq) stanza;
+			Iq.Type type = iqResponse.getType();
+			if (type == Iq.Type.result)
 			{
 				sessionBinded = true;
 				
-				notifyLoginFuture();
-				
+				notifyLoginFuture();				
 				connectionListenerServiceTracker.fireSessionBinded(this);
 				
 				((XmppContactManagerImpl)getContactManager()).queryRoster();
@@ -913,8 +988,8 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 					owner.changePresence(owner.getInitPresence());
 				}
 			}
-			else if (type == IQ.Type.error)
-			{
+			else if (type == Iq.Type.error)
+			{				
 				throw new BindSessionException(iqResponse.getError());
 			}
 		}
@@ -967,11 +1042,11 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	
 	private void startTLS() throws IOException, XmppException
 	{
-		StartTLS startTLS = new StartTLS();
+		StartTls startTLS = new StartTls();
 		sendStanza(startTLS);
 	}
 	
-	private void fireCollector(XMLStanza data)
+	private void fireCollector(XmlStanza data)
 	{
 		for (StanzaCollector collector : collectors)
 		{
@@ -983,10 +1058,16 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	{
 		if ("urn:ietf:params:xml:ns:xmpp-tls".equals(failure.getNamespace()))
 		{
+			logger.error(getConnectionConfig().getServiceName() + 
+					"(" + getConnectionID() + ") tls failed");
+			
 			connectionListenerServiceTracker.fireExceptionCaught(this, new TlsFailedException(failure));
 		}
 		else if ("urn:ietf:params:xml:ns:xmpp-sasl".equals(failure.getNamespace()))
 		{
+			logger.error(getConnectionConfig().getServiceName() + 
+					"(" + getConnectionID() + ") sasl failed");
+			
 			connectionListenerServiceTracker.fireSaslFailed(this, failure);
 		}
 	}
@@ -1005,9 +1086,13 @@ public class XmppConnectionImpl extends AbstractPropertied implements XmppConnec
 	@Override
 	public void messageSent(IoSession session, Object message) throws Exception
 	{
-		if (message instanceof XMLStanza)
+		if (message instanceof XmlStanza)
 		{
-			stanzaSendListenerServiceTracker.fireStanzaSendListener(this, (XMLStanza) message);
+			XmlStanza stanza = (XmlStanza) message;
+			logger.debug(getConnectionConfig().getServiceName() + 
+					"(" + getConnectionID() + ") send stanza : " + stanza.toXML());
+			
+			stanzaSendListenerServiceTracker.fireStanzaSendListener(this, stanza);
 		}
 	}
 

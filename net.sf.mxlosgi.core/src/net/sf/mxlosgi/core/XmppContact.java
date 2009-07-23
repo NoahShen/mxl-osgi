@@ -6,7 +6,7 @@ package net.sf.mxlosgi.core;
 import java.util.Collection;
 
 import net.sf.mxlosgi.utils.Propertied;
-import net.sf.mxlosgi.xmpp.IQRoster;
+import net.sf.mxlosgi.xmpp.IqRoster;
 import net.sf.mxlosgi.xmpp.JID;
 
 /**
@@ -59,7 +59,7 @@ public interface XmppContact extends Propertied
 	 * 
 	 * @return
 	 */
-	public IQRoster.Item getRosterItem();
+	public IqRoster.Item getRosterItem();
 	
 	/**
 	 * 

@@ -5,7 +5,7 @@ package net.sf.mxlosgi.xmpp;
  * @author noah
  * 
  */
-public interface PacketExtension extends XMLStanza
+public interface PacketExtension extends XmlStanza
 {
 
 	/**

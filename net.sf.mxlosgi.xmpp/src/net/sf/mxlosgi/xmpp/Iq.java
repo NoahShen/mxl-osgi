@@ -10,7 +10,7 @@ import net.sf.mxlosgi.utils.StringUtils;
  * @author noah
  * 
  */
-public class IQ extends Packet
+public class Iq extends Packet
 {
 
 	/**
@@ -20,11 +20,11 @@ public class IQ extends Packet
 
 	private Type type = Type.get;
 
-	public IQ()
+	public Iq()
 	{
 	}
 
-	public IQ(Type type)
+	public Iq(Type type)
 	{
 		this.type = type;
 	}
@@ -88,7 +88,7 @@ public class IQ extends Packet
 			buf.append(extension);
 		}
 		// Add the error sub-packet, if there is one.
-		XMPPError error = getError();
+		XmppError error = getError();
 		if (error != null)
 		{
 			buf.append(error.toXML());
@@ -103,7 +103,7 @@ public class IQ extends Packet
 	@Override
 	public Object clone() throws CloneNotSupportedException
 	{
-		IQ iq = (IQ) super.clone();
+		Iq iq = (Iq) super.clone();
 		iq.setType(this.type);
 		return iq;
 	}

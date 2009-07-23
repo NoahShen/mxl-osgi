@@ -7,7 +7,7 @@ package net.sf.mxlosgi.xmpp;
  * @author noah
  * 
  */
-public class Compress implements XMLStanza
+public class Compress implements XmlStanza
 {
 	/**
 	 * 

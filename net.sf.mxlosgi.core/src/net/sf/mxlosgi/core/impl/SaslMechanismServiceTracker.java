@@ -23,6 +23,11 @@ public class SaslMechanismServiceTracker extends ServiceTracker
 	public SaslMechanism getSaslMechanism(String mechanism)
 	{
 		Object[] services = getServices();
+		if (services == null)
+		{
+			return null;
+		}
+		
 		for (Object obj : services)
 		{
 			SaslMechanism saslMechanism = (SaslMechanism) obj;

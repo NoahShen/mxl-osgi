@@ -4,7 +4,7 @@
 package net.sf.mxlosgi.xmppparser;
 
 import net.sf.mxlosgi.xmpp.PacketExtension;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -23,7 +23,7 @@ public interface XmppParser
 	 * @return
 	 * @throws XmlPullParserException
 	 */
-	public XMLStanza parseXML(String xml) throws Exception;
+	public XmlStanza parseXML(String xml) throws Exception;
 	
 	/**
 	 * 
@@ -34,4 +34,12 @@ public interface XmppParser
 	 * @throws Exception
 	 */
 	public PacketExtension parseUnknownExtension(XmlPullParser parser, String elementName, String namespace) throws Exception;
+	
+	/**
+	 * 
+	 * @param elementName
+	 * @param namespace
+	 * @return
+	 */
+	public ExtensionParser getExtensionParser(String elementName, String namespace);
 }
