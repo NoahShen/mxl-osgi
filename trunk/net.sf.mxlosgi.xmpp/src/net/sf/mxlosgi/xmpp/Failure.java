@@ -5,7 +5,7 @@ package net.sf.mxlosgi.xmpp;
  * @author noah
  *
  */
-public class Failure implements XMLStanza
+public class Failure implements XmlStanza
 {
 	/**
 	 * 
@@ -97,7 +97,7 @@ public class Failure implements XMLStanza
 		return failure;
 	}
 
-	public static class Error implements XMLStanza
+	public static class Error implements XmlStanza
 	{
 		/**
 		 * 

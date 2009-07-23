@@ -29,6 +29,11 @@ public class ExtensionParserServiceTracker extends ServiceTracker
 	public ExtensionParser getExtensionParser(String elementName, String namespace)
 	{
 		Object[] services = getServices();
+		if (services == null)
+		{
+			return null;
+		}
+		
 		for (Object obj : services)
 		{
 			ExtensionParser parser = (ExtensionParser) obj;

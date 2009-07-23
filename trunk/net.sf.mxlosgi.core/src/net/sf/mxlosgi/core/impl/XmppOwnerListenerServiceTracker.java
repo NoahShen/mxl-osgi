@@ -40,6 +40,11 @@ public class XmppOwnerListenerServiceTracker extends ServiceTracker
 	public void fireOtherChanged(XmppOwner owner,  UserResource userResource)
 	{
 		Object[] services = getServices();
+		if (services == null)
+		{
+			return;
+		}
+		
 		for (Object obj : services)
 		{
 			XmppOwnerListener listener  = (XmppOwnerListener) obj;

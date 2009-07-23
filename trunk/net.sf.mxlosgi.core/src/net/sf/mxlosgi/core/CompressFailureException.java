@@ -5,7 +5,7 @@ package net.sf.mxlosgi.core;
 
 import net.sf.mxlosgi.xmpp.Failure;
 import net.sf.mxlosgi.xmpp.StreamError;
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmppError;
 
 /**
  * @author noah
@@ -65,7 +65,7 @@ public class CompressFailureException extends XmppException
 	/**
 	 * @param error
 	 */
-	public CompressFailureException(XMPPError error)
+	public CompressFailureException(XmppError error)
 	{
 		super(error);
 	}

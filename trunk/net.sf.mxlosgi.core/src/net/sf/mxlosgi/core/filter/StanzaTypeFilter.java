@@ -1,7 +1,7 @@
 package net.sf.mxlosgi.core.filter;
 
 import net.sf.mxlosgi.core.XmppConnection;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 
 /**
@@ -10,10 +10,10 @@ import net.sf.mxlosgi.xmpp.XMLStanza;
  */
 public class StanzaTypeFilter implements StanzaFilter
 {
-	private Class<? extends XMLStanza> classType;
+	private Class<? extends XmlStanza> classType;
 	
 	
-	public StanzaTypeFilter(Class<? extends XMLStanza> classType)
+	public StanzaTypeFilter(Class<? extends XmlStanza> classType)
 	{
 		this.classType = classType;
 	}
@@ -21,7 +21,7 @@ public class StanzaTypeFilter implements StanzaFilter
 
 
 	@Override
-	public boolean accept(XmppConnection connection, XMLStanza data)
+	public boolean accept(XmppConnection connection, XmlStanza data)
 	{
 		return classType.isInstance(data);
 	}

@@ -233,7 +233,7 @@ public class Presence extends Packet
 		buf.append(this.getExtensionsXML());
 
 		// Add the error sub-packet, if there is one.
-		XMPPError error = getError();
+		XmppError error = getError();
 		if (error != null)
 		{
 			buf.append(error.toXML());

@@ -6,7 +6,7 @@ package net.sf.mxlosgi.core.impl;
 import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.core.filter.StanzaFilter;
 import net.sf.mxlosgi.core.interceptor.StanzaReceInterceptor;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -24,7 +24,7 @@ public class StanzaReceInterceptorServiceTracker extends ServiceTracker
 		super(context, StanzaReceInterceptor.class.getName(), null);
 	}
 
-	public boolean fireStanzaReceInterceptor(XmppConnection connection, XMLStanza stanza)
+	public boolean fireStanzaReceInterceptor(XmppConnection connection, XmlStanza stanza)
 	{
 		ServiceReference[] references = getServiceReferences();
 		if (references == null)

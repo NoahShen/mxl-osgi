@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.sf.mxlosgi.core.StanzaCollector;
 import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.core.filter.StanzaFilter;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 
 
@@ -22,7 +22,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 
 	private XmppConnectionImpl connection;
 
-	private Queue<XMLStanza> resultQueue;
+	private Queue<XmlStanza> resultQueue;
 
 	private StanzaFilter stanzaFilter;
 
@@ -32,7 +32,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 	{
 		this.connection = connection;
 		this.stanzaFilter = stanzaFilter;
-		this.resultQueue = new ConcurrentLinkedQueue<XMLStanza>();
+		this.resultQueue = new ConcurrentLinkedQueue<XmlStanza>();
 	}
 
 	/*
@@ -63,7 +63,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 	 * @see net.sf.mxl.mxlconnectionbundle.PacketCollector#nextResult()
 	 */
 	@Override
-	public XMLStanza nextResult()
+	public XmlStanza nextResult()
 	{
 		// Wait indefinitely until there is a result to return.
 
@@ -90,7 +90,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 	 * @see net.sf.mxl.mxlconnectionbundle.PacketCollector#nextResult(long)
 	 */
 	@Override
-	public XMLStanza nextResult(long timeout)
+	public XmlStanza nextResult(long timeout)
 	{
 		// Wait up to the specified amount of time for a result.
 		if (resultQueue.isEmpty())
@@ -145,7 +145,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 	 * @see net.sf.mxl.mxlconnectionbundle.PacketCollector#pollResult()
 	 */
 	@Override
-	public XMLStanza pollResult()
+	public XmlStanza pollResult()
 	{
 		if (resultQueue.isEmpty())
 		{
@@ -158,7 +158,7 @@ public class StanzaCollectorImpl implements StanzaCollector
 	}
 
 	@Override
-	public void processPacket(XmppConnection connection, XMLStanza data)
+	public void processPacket(XmppConnection connection, XmlStanza data)
 	{
 		if (data == null)
 		{

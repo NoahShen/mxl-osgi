@@ -3,7 +3,7 @@
  */
 package net.sf.mxlosgi.core;
 
-import net.sf.mxlosgi.xmpp.XMPPError;
+import net.sf.mxlosgi.xmpp.XmppError;
 
 
 /**
@@ -54,7 +54,7 @@ public class ServerTimeoutException extends XmppException
 	/**
 	 * @param error
 	 */
-	public ServerTimeoutException(XMPPError error)
+	public ServerTimeoutException(XmppError error)
 	{
 		super(error);
 	}

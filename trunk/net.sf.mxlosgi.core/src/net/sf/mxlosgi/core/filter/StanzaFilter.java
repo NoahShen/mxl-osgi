@@ -1,7 +1,7 @@
 package net.sf.mxlosgi.core.filter;
 
 import net.sf.mxlosgi.core.XmppConnection;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 
 
@@ -16,5 +16,5 @@ public interface StanzaFilter
 	 *                  the stanza to test.
 	 * @return true if and only if <tt>stanza</tt> passes the filter.
 	 */
-	public boolean accept(XmppConnection connection, XMLStanza stanza);
+	public boolean accept(XmppConnection connection, XmlStanza stanza);
 }

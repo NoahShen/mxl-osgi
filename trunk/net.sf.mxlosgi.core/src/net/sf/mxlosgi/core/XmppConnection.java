@@ -4,7 +4,7 @@ import net.sf.mxlosgi.core.filter.StanzaFilter;
 import net.sf.mxlosgi.utils.Propertied;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Presence;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 /**
  * @author noah
@@ -156,7 +156,7 @@ public interface XmppConnection extends Propertied
 	 * @param stanza
 	 *                  the stanza to send.
 	 */
-	public Future sendStanza(XMLStanza data);
+	public Future sendStanza(XmlStanza data);
 
 	/**
 	 * Creates a new stanza collector for this connection. A stanza filter

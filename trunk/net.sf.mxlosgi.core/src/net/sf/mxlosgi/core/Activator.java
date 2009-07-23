@@ -57,7 +57,7 @@ public class Activator implements BundleActivator, ServiceListener
 	{
 		this.bundle = context.getBundle();
 		
-		String filter = "( objectClass = " + XmppParser . class . getName ( ) + " )";
+		String filter = "(objectClass=" + XmppParser.class.getName() + ")";
 		context.addServiceListener(this, filter);
 		
 		xmppParserServiceTracker = new XmppParserServiceTracker(context);

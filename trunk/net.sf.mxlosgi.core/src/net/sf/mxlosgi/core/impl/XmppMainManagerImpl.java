@@ -103,24 +103,18 @@ public class XmppMainManagerImpl implements XmppMainManager
 		}
 		connections.add(connection);
 		
-		logger.debug("connection created");
+		logger.info("connection created");
 		
 		connectionListenerServiceTracker.fireConnectionCreated(connection);
 		return connection;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.mxlosgi.mxlosgimainbundle.XMPPMainManager#getAllConnections()
-	 */
 	@Override
 	public XmppConnection[] getAllConnections()
 	{
 		return connections.toArray(new XmppConnection[]{});
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.mxlosgi.mxlosgimainbundle.XMPPMainManager#getConnections(java.lang.String)
-	 */
 	@Override
 	public XmppConnection[] getConnections(String serviceName)
 	{

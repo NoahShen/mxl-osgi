@@ -1,7 +1,7 @@
 package net.sf.mxlosgi.core;
 
 import net.sf.mxlosgi.core.filter.StanzaFilter;
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 
 public interface StanzaCollector
@@ -31,7 +31,7 @@ public interface StanzaCollector
 	 * @return the next stanza result, or <tt>null</tt> if there are no
 	 *         more results.
 	 */
-	public XMLStanza pollResult();
+	public XmlStanza pollResult();
 
 	/**
 	 * Returns the next available stanza. The method call will block (not
@@ -39,7 +39,7 @@ public interface StanzaCollector
 	 * 
 	 * @return the next available stanza.
 	 */
-	public XMLStanza nextResult();
+	public XmlStanza nextResult();
 
 	/**
 	 * Returns the next available stanza. The method call will block (not
@@ -52,11 +52,11 @@ public interface StanzaCollector
 	 *                  milleseconds).
 	 * @return the next available stanza.
 	 */
-	public XMLStanza nextResult(long timeout);
+	public XmlStanza nextResult(long timeout);
 	
 	/**
 	 * @param connection
 	 * @param stanza
 	 */
-	public void processPacket(XmppConnection connection, XMLStanza stanza);
+	public void processPacket(XmppConnection connection, XmlStanza stanza);
 }

@@ -6,6 +6,9 @@ package net.sf.mxlosgi.core.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.mxlosgi.core.UserResource;
 import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.core.XmppOwner;
@@ -20,6 +23,8 @@ import net.sf.mxlosgi.xmpp.Presence;
 public class XmppOwnerImpl  extends AbstractPropertied implements XmppOwner
 {
 
+	private final Logger logger = LoggerFactory.getLogger(XmppOwnerImpl.class);
+	
 	private XmppConnection connection;
 	
 	private Presence currentPresence;
@@ -53,6 +58,8 @@ public class XmppOwnerImpl  extends AbstractPropertied implements XmppOwner
 		
 		connection.sendStanza(presence);
 		currentPresence = presence;
+		
+		logger.debug("owner status changed");
 		
 		xmppOwnerListenerServiceTracker.fireOwenrStatusChanged(this);
 	}
@@ -119,6 +126,7 @@ public class XmppOwnerImpl  extends AbstractPropertied implements XmppOwner
 			otherResources.remove(resource);
 		}
 		
+		logger.debug("owner other resource status changed");
 		xmppOwnerListenerServiceTracker.fireOtherChanged(this, userResource);
 	}
 

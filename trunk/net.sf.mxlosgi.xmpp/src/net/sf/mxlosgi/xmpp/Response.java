@@ -5,7 +5,7 @@ package net.sf.mxlosgi.xmpp;
  * @author noah
  * 
  */
-public class Response implements XMLStanza
+public class Response implements XmlStanza
 {
 
 	/**

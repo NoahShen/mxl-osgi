@@ -1,7 +1,7 @@
 package net.sf.mxlosgi.core.impl;
 
 
-import net.sf.mxlosgi.xmpp.XMLStanza;
+import net.sf.mxlosgi.xmpp.XmlStanza;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
@@ -24,9 +24,9 @@ public class XmppEncoder extends ProtocolEncoderAdapter
 	public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception
 	{
 		String xml = null;
-		if (message instanceof XMLStanza)
+		if (message instanceof XmlStanza)
 		{
-			XMLStanza stanza = (XMLStanza) message;
+			XmlStanza stanza = (XmlStanza) message;
 			xml = stanza.toXML();
 		}
 		else if (message instanceof String)

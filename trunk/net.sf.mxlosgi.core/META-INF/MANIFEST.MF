@@ -7,9 +7,7 @@ Bundle-ClassPath: bin/,
  lib/jzlib.jar,
  lib/mina-core-1.1.7.jar,
  lib/mina-filter-compression-1.1.7.jar,
- lib/mina-filter-ssl-1.1.7.jar,
- lib/slf4j-api-1.5.2.jar,
- lib/slf4j-simple-1.5.2.jar
+ lib/mina-filter-ssl-1.1.7.jar
 Bundle-Activator: net.sf.mxlosgi.core.Activator
 Bundle-Vendor: Noah
 Import-Package: net.sf.mxlosgi.sasl,
