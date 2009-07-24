@@ -8,6 +8,7 @@ import net.sf.mxlosgi.disco.DiscoInfoManager;
 import net.sf.mxlosgi.disco.DiscoInfoPacketExtension;
 import net.sf.mxlosgi.disco.DiscoItemsManager;
 import net.sf.mxlosgi.disco.DiscoItemsPacketExtension;
+import net.sf.mxlosgi.privacy.PrivacyManager;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Presence;
 
@@ -68,8 +69,22 @@ public class Activator implements BundleActivator {
 		futureLogin.complete();
 		
 		
-		//testDisconnect(connection);
+//		testDisconnect(connection);
 //		testDisco(connection, context);
+		testPrivacy(connection, context);
+	}
+	
+	private void testPrivacy(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker privacyManagerServiceTracker = new ServiceTracker(context, PrivacyManager.class.getName(), null);
+		privacyManagerServiceTracker.open();
+		PrivacyManager privacyManager = (PrivacyManager) privacyManagerServiceTracker.getService();
+		privacyManager.getPrivacyLists(connection);
+		privacyManager.declineActiveList(connection);
+		
+		privacyManagerServiceTracker.close();
 	}
 
 	private void testDisconnect(XmppConnection connection) throws Exception
