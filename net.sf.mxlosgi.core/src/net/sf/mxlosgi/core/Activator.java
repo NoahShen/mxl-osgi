@@ -24,7 +24,7 @@ import org.osgi.framework.ServiceRegistration;
 public class Activator implements BundleActivator, ServiceListener
 {
 
-	private ServiceRegistration sr;
+	private ServiceRegistration srMainManager;
 
 	private SaslMechanismServiceTracker saslMechanismServiceTracker;
 
@@ -56,9 +56,6 @@ public class Activator implements BundleActivator, ServiceListener
 	public void start(BundleContext context) throws Exception
 	{
 		this.bundle = context.getBundle();
-		
-		String filter = "(objectClass=" + XmppParser.class.getName() + ")";
-		context.addServiceListener(this, filter);
 		
 		xmppParserServiceTracker = new XmppParserServiceTracker(context);
 		xmppParserServiceTracker.open();
@@ -101,7 +98,11 @@ public class Activator implements BundleActivator, ServiceListener
 															contactListenerServiceTracker,
 															xmppOwnerListenerServiceTracker);
 		
-		sr = context.registerService(XmppMainManager.class.getName(), mainManager, null);
+		srMainManager = context.registerService(XmppMainManager.class.getName(), mainManager, null);
+		
+		
+		String filter = "(objectClass=" + XmppParser.class.getName() + ")";
+		context.addServiceListener(this, filter);
 	}
 
 	/*
@@ -111,10 +112,10 @@ public class Activator implements BundleActivator, ServiceListener
 	 */
 	public void stop(BundleContext context) throws Exception
 	{
-		if (sr != null)
+		if (srMainManager != null)
 		{
-			sr.unregister();
-			sr = null;
+			srMainManager.unregister();
+			srMainManager = null;
 		}
 		
 		if (saslMechanismServiceTracker != null)
@@ -187,7 +188,8 @@ public class Activator implements BundleActivator, ServiceListener
 		int eventType = event.getType();
 		if (eventType == ServiceEvent.UNREGISTERING)
 		{
-			if (xmppParserServiceTracker.getTrackingCount() <= 0)
+			
+			if (xmppParserServiceTracker.size() <= 0)
 			{
 				try
 				{

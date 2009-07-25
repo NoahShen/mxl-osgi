@@ -1,5 +1,9 @@
 package net.sf.mxlosgi.starter;
 
+import net.sf.mxlosgi.chat.Chat;
+import net.sf.mxlosgi.chat.XmppChatManager;
+import net.sf.mxlosgi.chat.listener.ChatListener;
+import net.sf.mxlosgi.chat.listener.ChatManagerListener;
 import net.sf.mxlosgi.core.XmppException;
 import net.sf.mxlosgi.core.XmppMainManager;
 import net.sf.mxlosgi.core.Future;
@@ -10,6 +14,7 @@ import net.sf.mxlosgi.disco.DiscoItemsManager;
 import net.sf.mxlosgi.disco.DiscoItemsPacketExtension;
 import net.sf.mxlosgi.privacy.PrivacyManager;
 import net.sf.mxlosgi.xmpp.JID;
+import net.sf.mxlosgi.xmpp.Message;
 import net.sf.mxlosgi.xmpp.Presence;
 
 import org.osgi.framework.BundleActivator;
@@ -71,9 +76,58 @@ public class Activator implements BundleActivator {
 		
 //		testDisconnect(connection);
 //		testDisco(connection, context);
-		testPrivacy(connection, context);
+//		testPrivacy(connection, context);
+		testChat(connection, context);
 	}
 	
+	private void testChat(XmppConnection connection, BundleContext context) throws InterruptedException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker chatManagerServiceTracker = new ServiceTracker(context, XmppChatManager.class.getName(), null);
+		chatManagerServiceTracker.open();
+		XmppChatManager chatManager = (XmppChatManager) chatManagerServiceTracker.getService();
+		context.registerService(ChatManagerListener.class.getName(), new ChatManagerListener(){
+
+			@Override
+			public void chatClosed(XmppChatManager chatManager, Chat chat)
+			{
+				System.out.println("chatClosed " + chat);
+			}
+
+			@Override
+			public void chatCreated(XmppChatManager chatManager, Chat chat)
+			{
+				System.out.println("chatCreated " + chat);
+			}
+			
+		}, null);
+		
+		context.registerService(ChatListener.class.getName(), new ChatListener(){
+
+			@Override
+			public void processMessage(Chat chat, Message message)
+			{
+				System.out.println("processMessage : " + message.getBody());
+				chat.sendMessage("text");
+			}
+
+			@Override
+			public void resourceChanged(Chat chat, String currentChatResource)
+			{
+				System.out.println("resourceChanged : " + currentChatResource);
+			}
+
+			
+			
+		}, null);
+		
+		Chat chat = chatManager.createChat(connection, new JID("Noah.Shen87", "gmail.com", null));
+		chat.sendMessage("Hello!");
+		
+		chatManagerServiceTracker.close();
+	}
+
 	private void testPrivacy(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
 	{
 		Thread.sleep(10 * 1000);

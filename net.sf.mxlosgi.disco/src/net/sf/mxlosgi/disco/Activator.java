@@ -33,6 +33,8 @@ public class Activator implements BundleActivator, ServiceListener
 	private ServiceRegistration discoInfoParserRegistration;
 	private ServiceRegistration discoItemsRegistration;
 	private ServiceRegistration discoItemsParserRegistration;
+	private DiscoInfoFeatureServiceTracker discoInfoFeatureServiceTracker;
+	private DiscoInfoIdentityServiceTracker discoInfoIdentityServiceTracker;
 
 	/*
 	 * (non-Javadoc)
@@ -43,10 +45,10 @@ public class Activator implements BundleActivator, ServiceListener
 	{
 		this.bundle = context.getBundle();
 		
-		DiscoInfoFeatureServiceTracker discoInfoFeatureServiceTracker = new DiscoInfoFeatureServiceTracker(context);
+		discoInfoFeatureServiceTracker = new DiscoInfoFeatureServiceTracker(context);
 		discoInfoFeatureServiceTracker.open();
 		
-		DiscoInfoIdentityServiceTracker discoInfoIdentityServiceTracker = new DiscoInfoIdentityServiceTracker(context);
+		discoInfoIdentityServiceTracker = new DiscoInfoIdentityServiceTracker(context);
 		discoInfoIdentityServiceTracker.open();
 		
 		DiscoInfoManagerImpl discoInfoManager = new DiscoInfoManagerImpl(discoInfoFeatureServiceTracker,
@@ -73,7 +75,7 @@ public class Activator implements BundleActivator, ServiceListener
 		DiscoItemsExtensionParser discoItemsParser = new DiscoItemsExtensionParser();
 		discoItemsParserRegistration = context.registerService(ExtensionParser.class.getName(), discoItemsParser, null);
 		
-		String filter = "(objectClass=" + XmppMainManager.class.getName() + " )";
+		String filter = "(objectclass=" + XmppMainManager.class.getName() + ")";  
 		context.addServiceListener(this, filter);
 	}
 
@@ -84,6 +86,17 @@ public class Activator implements BundleActivator, ServiceListener
 	 */
 	public void stop(BundleContext context) throws Exception
 	{
+		if (discoInfoFeatureServiceTracker != null)
+		{
+			discoInfoFeatureServiceTracker.close();
+			discoInfoFeatureServiceTracker = null;
+		}
+		
+		if (discoInfoIdentityServiceTracker != null)
+		{
+			discoInfoIdentityServiceTracker.close();
+			discoInfoIdentityServiceTracker = null;
+		}
 		if (discoInfoFeatureRegistration != null)
 		{
 			discoInfoFeatureRegistration.unregister();

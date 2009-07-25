@@ -6,7 +6,9 @@ Bundle-Version: 1.0.0
 Bundle-ClassPath: bin/
 Bundle-Activator: net.sf.mxlosgi.starter.Activator
 Bundle-Vendor: Noah
-Import-Package: net.sf.mxlosgi.core,
+Import-Package: net.sf.mxlosgi.chat,
+ net.sf.mxlosgi.chat.listener,
+ net.sf.mxlosgi.core,
  net.sf.mxlosgi.core.filter,
  net.sf.mxlosgi.core.interceptor,
  net.sf.mxlosgi.core.listener,
