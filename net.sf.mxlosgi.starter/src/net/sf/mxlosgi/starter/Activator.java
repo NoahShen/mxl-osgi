@@ -77,7 +77,7 @@ public class Activator implements BundleActivator {
 //		testDisconnect(connection);
 //		testDisco(connection, context);
 //		testPrivacy(connection, context);
-		testChat(connection, context);
+//		testChat(connection, context);
 	}
 	
 	private void testChat(XmppConnection connection, BundleContext context) throws InterruptedException
