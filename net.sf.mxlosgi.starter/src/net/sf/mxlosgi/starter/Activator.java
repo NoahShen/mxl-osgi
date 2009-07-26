@@ -1,5 +1,7 @@
 package net.sf.mxlosgi.starter;
 
+import java.util.Hashtable;
+
 import net.sf.mxlosgi.chat.Chat;
 import net.sf.mxlosgi.chat.XmppChatManager;
 import net.sf.mxlosgi.chat.listener.ChatListener;
@@ -8,10 +10,14 @@ import net.sf.mxlosgi.core.XmppException;
 import net.sf.mxlosgi.core.XmppMainManager;
 import net.sf.mxlosgi.core.Future;
 import net.sf.mxlosgi.core.XmppConnection;
+import net.sf.mxlosgi.core.filter.StanzaFilter;
 import net.sf.mxlosgi.disco.DiscoInfoManager;
 import net.sf.mxlosgi.disco.DiscoInfoPacketExtension;
 import net.sf.mxlosgi.disco.DiscoItemsManager;
 import net.sf.mxlosgi.disco.DiscoItemsPacketExtension;
+import net.sf.mxlosgi.lastactivity.LastActivityManager;
+import net.sf.mxlosgi.lastactivity.LastActivityPacketExtension;
+import net.sf.mxlosgi.lastactivity.listener.LastActivityListener;
 import net.sf.mxlosgi.privacy.PrivacyManager;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Message;
@@ -78,6 +84,32 @@ public class Activator implements BundleActivator {
 //		testDisco(connection, context);
 //		testPrivacy(connection, context);
 //		testChat(connection, context);
+//		testLastActivity(connection, context);
+	}
+	
+	private void testLastActivity(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker lastActivityManagerServiceTracker = new ServiceTracker(context, LastActivityManager.class.getName(), null);
+		lastActivityManagerServiceTracker.open();
+		LastActivityManager lastActivityManager = (LastActivityManager) lastActivityManagerServiceTracker.getService();
+		LastActivityPacketExtension lastA = lastActivityManager.getLastActivity(connection, new JID("Noah.Shen87", "gmail.com", "Pidgin9F6228D2"));
+		System.out.println(lastA.toXML());
+		
+		Hashtable<String, Long> properties = new Hashtable<String, Long>();
+		properties.put("idleSecond", 10L);
+		context.registerService(LastActivityListener.class.getName(), new LastActivityListener(){
+
+			@Override
+			public void idle()
+			{
+				System.out.println("idle=====================");
+			}
+			
+		}, properties);
+		
+		lastActivityManagerServiceTracker.close();
 	}
 	
 	private void testChat(XmppConnection connection, BundleContext context) throws InterruptedException
