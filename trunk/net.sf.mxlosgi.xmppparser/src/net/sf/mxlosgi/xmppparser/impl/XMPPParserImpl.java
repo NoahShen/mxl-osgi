@@ -34,6 +34,8 @@ import net.sf.mxlosgi.xmppparser.ExtensionParser;
 import net.sf.mxlosgi.xmppparser.UnknownPacketExtension;
 import net.sf.mxlosgi.xmppparser.XmppParser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -45,6 +47,8 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class XMPPParserImpl implements XmppParser
 {
+	private final Logger logger = LoggerFactory.getLogger(XMPPParserImpl.class);
+	
 	private ExtensionParserServiceTracker extensionParserServiceTracker;
 	/**
 	 * 
@@ -58,6 +62,7 @@ public class XMPPParserImpl implements XmppParser
 	@Override
 	public XmlStanza parseXML(String xml) throws Exception
 	{
+		
 		XmlPullParser parser = new MXParser();
 		parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
 		
@@ -77,6 +82,12 @@ public class XMPPParserImpl implements XmppParser
 			}
 			catch (Exception e)
 			{
+				if (logger.isDebugEnabled())
+				{
+					e.printStackTrace();
+					logger.debug("parse exception:" + e.getMessage());
+				}
+				
 				return null;
 			}
 		}
@@ -93,6 +104,12 @@ public class XMPPParserImpl implements XmppParser
 		}
 		catch (Exception e)
 		{
+			if (logger.isDebugEnabled())
+			{
+				e.printStackTrace();
+				logger.debug("parse exception:" + e.getMessage());
+			}
+			
 			return null;
 		}
 
@@ -431,17 +448,8 @@ public class XMPPParserImpl implements XmppParser
 				}
 				else 
 				{
-					ExtensionParser xparser = extensionParserServiceTracker.getExtensionParser(elementName, namespace);
-					if (xparser != null)
-					{
-						PacketExtension packetX = xparser.parseExtension(parser, this);
-						message.addExtension(packetX);
-					}
-					else
-					{
-						PacketExtension packetX = parseUnknownExtension(parser, elementName, namespace);
-						message.addExtension(packetX);
-					}
+					processExtension(parser, elementName, namespace, message);
+					
 				}
 			}
 			else if (eventType == XmlPullParser.END_TAG)
@@ -455,6 +463,32 @@ public class XMPPParserImpl implements XmppParser
 		
 		return message;
 	}
+
+	private void processExtension(XmlPullParser parser, String elementName, String namespace, Packet packet) throws Exception
+	{
+		
+		ExtensionParser xparser = extensionParserServiceTracker.getExtensionParser(elementName, namespace);
+		if (xparser != null)
+		{
+			logger.debug("get [" + elementName + " " + namespace + "]ExtensionParser: " + xparser);
+			
+			PacketExtension packetX = xparser.parseExtension(parser, this);
+			
+			logger.debug("ExtensionParser parse extension complete:" + packetX);
+			
+			packet.addExtension(packetX);
+		}
+		else
+		{
+			logger.debug("can not get [" + elementName + " " + namespace + "]ExtensionParser");
+			
+			PacketExtension packetX = parseUnknownExtension(parser, elementName, namespace);
+			
+			logger.debug("parseUnknownExtension complete:" + packetX);
+			packet.addExtension(packetX);
+		}
+	}
+
 
 	private XmlStanza parsePresence(XmlPullParser parser) throws Exception
 	{
@@ -510,17 +544,7 @@ public class XMPPParserImpl implements XmppParser
 				}
 				else
 				{
-					ExtensionParser xparser = extensionParserServiceTracker.getExtensionParser(elementName, namespace);
-					if (xparser != null)
-					{
-						PacketExtension packetX = xparser.parseExtension(parser, this);
-						presence.addExtension(packetX);
-					}
-					else
-					{
-						PacketExtension packetX = parseUnknownExtension(parser, elementName, namespace);
-						presence.addExtension(packetX);
-					}
+					processExtension(parser, elementName, namespace, presence);
 				}
 			}
 			else if (eventType == XmlPullParser.END_TAG)
@@ -594,17 +618,7 @@ public class XMPPParserImpl implements XmppParser
 				}
 				else
 				{
-					ExtensionParser xparser = extensionParserServiceTracker.getExtensionParser(elementName, namespace);
-					if (xparser != null)
-					{
-						PacketExtension packetX = xparser.parseExtension(parser, this);
-						iq.addExtension(packetX);
-					}
-					else
-					{
-						PacketExtension packetX = parseUnknownExtension(parser, elementName, namespace);
-						iq.addExtension(packetX);
-					}
+					processExtension(parser, elementName, namespace, iq);
 				}
 			}
 			else if (eventType == XmlPullParser.END_TAG)
