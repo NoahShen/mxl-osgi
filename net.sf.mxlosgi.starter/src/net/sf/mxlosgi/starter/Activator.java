@@ -6,11 +6,10 @@ import net.sf.mxlosgi.chat.Chat;
 import net.sf.mxlosgi.chat.XmppChatManager;
 import net.sf.mxlosgi.chat.listener.ChatListener;
 import net.sf.mxlosgi.chat.listener.ChatManagerListener;
-import net.sf.mxlosgi.core.XmppException;
-import net.sf.mxlosgi.core.XmppMainManager;
 import net.sf.mxlosgi.core.Future;
 import net.sf.mxlosgi.core.XmppConnection;
-import net.sf.mxlosgi.core.filter.StanzaFilter;
+import net.sf.mxlosgi.core.XmppException;
+import net.sf.mxlosgi.core.XmppMainManager;
 import net.sf.mxlosgi.disco.DiscoInfoManager;
 import net.sf.mxlosgi.disco.DiscoInfoPacketExtension;
 import net.sf.mxlosgi.disco.DiscoItemsManager;
@@ -18,6 +17,9 @@ import net.sf.mxlosgi.disco.DiscoItemsPacketExtension;
 import net.sf.mxlosgi.lastactivity.LastActivityManager;
 import net.sf.mxlosgi.lastactivity.LastActivityPacketExtension;
 import net.sf.mxlosgi.lastactivity.listener.LastActivityListener;
+import net.sf.mxlosgi.muc.MucManager;
+import net.sf.mxlosgi.muc.RoomInfo;
+import net.sf.mxlosgi.muc.listener.MucListener;
 import net.sf.mxlosgi.privacy.PrivacyManager;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Message;
@@ -85,6 +87,140 @@ public class Activator implements BundleActivator {
 //		testPrivacy(connection, context);
 //		testChat(connection, context);
 //		testLastActivity(connection, context);
+		testMuc(connection, context);
+	}
+	
+
+	private void testMuc(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker mucManagerServiceTracker = new ServiceTracker(context, MucManager.class.getName(), null);
+		mucManagerServiceTracker.open();
+		MucManager mucManager = (MucManager) mucManagerServiceTracker.getService();
+		context.registerService(MucListener.class.getName(), new MucListener(){
+
+			@Override
+			public void declineReceived(XmppConnection connection, Message message)
+			{
+			}
+
+			@Override
+			public void invitationReceived(XmppConnection connection, Message message)
+			{
+				System.out.println("=====" + message.toXML());
+			}
+		
+		}, null);
+		
+//		boolean b = mucManager.isUserSupportMuc(connection, new JID("Noah", "jabbercn.org", "Pidgin"));
+//		System.out.println("==============" + b);
+//		
+//		b = mucManager.isServerSupportMuc(connection, new JID("conference.jabber.org"));
+//		System.out.println("==============" + b);
+//		
+//		RoomInfo roomInfo = mucManager.getRoomInfo(connection, new JID("szsport@conference.rooyee.biz"));
+//		System.out.println(roomInfo);
+//		
+//		mucManager.getRoomList(connection, new JID("conference.rooyee.biz"));
+		
+
+//		JID mucServer = new JID("conference.12jabber.net");
+//		JID mucRoom = new JID("support@conference.12jabber.com");
+		
+//		JID mucServer = new JID("muc.jabber.freenet.de");
+//		JID mucRoom = new JID("arcadia@muc.jabber.freenet.de");
+		
+//		JID mucServer = new JID("conference.jabber.dk");
+//		JID mucRoom = new JID("desert@conference.jabber.dk");
+		
+		JID mucServer = new JID("conference.ubuntu-jabber.de");
+		JID mucRoom = new JID("ubuntu@conference.ubuntu-jabber.de");
+		
+//		JID mucServer = new JID("conference.rooyee.biz");
+//		JID mucRoom = new JID("rooyee@conference.rooyee.biz");	
+		
+		System.out.println(mucManager.isServerSupportMuc(connection, mucServer));
+		DiscoItemsPacketExtension.Item items[] = mucManager.getRoomList(connection, mucServer);
+		for (DiscoItemsPacketExtension.Item item : items)
+		{
+			System.out.println(item.toXML());
+		}
+		
+		RoomInfo roomInfo = mucManager.getRoomInfo(connection, mucRoom);
+		System.out.println(roomInfo.isMembersOnly());
+		
+		DiscoItemsPacketExtension.Item itemsUsers[] = mucManager.getUsers(connection, mucRoom);
+		for (DiscoItemsPacketExtension.Item item : itemsUsers)
+		{
+			System.out.println("=======users : " +item.toXML());
+		}
+//
+//		MucChat mucChat = mucManager.createMucChat(connection, mucRoom);
+//		System.out.println(mucChat.getRoomJID());
+//		
+//		mucChat.addMucChatListener(new MucChatListener(){
+//
+//			@Override
+//			public void error(Packet packet)
+//			{
+//				
+//			}
+//
+//			@Override
+//			public void ownerStatusChanged(MucRoomUser user, Set<String> statusCodes)
+//			{
+//				
+//			}
+//
+//			@Override
+//			public void processMessage(Message message)
+//			{
+//				System.out.println("message:" + message.getBody());
+//			}
+//
+//			@Override
+//			public void subjectUpdated(String subject, JID from)
+//			{
+//				System.out.println("subjectUpdated:" + subject);
+//			}
+//
+//			@Override
+//			public void userNicknameChanged(String oldNickName, String newNickName)
+//			{
+//				System.out.println("oldNickeName:" + oldNickName + " newNickeName:" + newNickName);
+//			}
+//
+//			@Override
+//			public void userStatusChanged(MucRoomUser user)
+//			{
+//				System.out.println("userStatusChanged:" + user);
+//			}
+//
+//			@Override
+//			public void userUnavaliable(MucRoomUser user)
+//			{
+//				System.out.println("userUnavaliable:" + user);
+//			}
+//			
+//		});
+//		MucInitialPresenceExtension.History history = new MucInitialPresenceExtension.History();
+//		history.setSeconds(180);
+//		mucChat.enterRoom(history);
+//		Thread.sleep(5 * 1000);
+////		mucChat.close();
+//		Presence presence = new Presence(Presence.Type.available);
+//		presence.setStatus("status");
+//		presence.setShow(Presence.Show.away);
+//		mucChat.changeStatus(presence);
+//		mucChat.inviteUser(new JID("Noah@jabbercn.org"), "reason");
+//		mucChat.sendMessage("text");
+//		mucChat.changeSubject("subject");
+//		mucChat.enterRoom();
+//		Thread.sleep(3 * 1000);
+//		mucChat.sendMessage("Hello!");
+		
+		mucManagerServiceTracker.close();
 	}
 	
 	private void testLastActivity(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
