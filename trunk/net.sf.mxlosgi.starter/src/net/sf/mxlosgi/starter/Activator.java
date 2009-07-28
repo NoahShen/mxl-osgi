@@ -21,8 +21,12 @@ import net.sf.mxlosgi.muc.MucManager;
 import net.sf.mxlosgi.muc.RoomInfo;
 import net.sf.mxlosgi.muc.listener.MucListener;
 import net.sf.mxlosgi.privacy.PrivacyManager;
+import net.sf.mxlosgi.privatedata.PrivateDataManager;
+import net.sf.mxlosgi.registration.RegisterExtension;
+import net.sf.mxlosgi.registration.RegistrationManager;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Message;
+import net.sf.mxlosgi.xmpp.PacketExtension;
 import net.sf.mxlosgi.xmpp.Presence;
 
 import org.osgi.framework.BundleActivator;
@@ -44,8 +48,8 @@ public class Activator implements BundleActivator {
 //		String serviceName = "pidgin.im";
 //		String serviceName = "tigase.org";
 //		String serviceName = "gmail.com";
-		String serviceName = "jabber.org";
-//		String serviceName = "jabbercn.org";
+//		String serviceName = "jabber.org";
+		String serviceName = "jabbercn.org";
 //		String serviceName = "szsport.org";
 		
 		//context.registerService(ConnectionListener.class.getName(), this, null);
@@ -87,10 +91,47 @@ public class Activator implements BundleActivator {
 //		testPrivacy(connection, context);
 //		testChat(connection, context);
 //		testLastActivity(connection, context);
-		testMuc(connection, context);
+//		testMuc(connection, context);
+//		testPrivateData(connection, context);
+//		testRegister(connection, context);
+	}
+	private void testRegister(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker registrationManagerServiceTracker = new ServiceTracker(context, RegistrationManager.class.getName(), null);
+		registrationManagerServiceTracker.open();
+		RegistrationManager registrationManager = (RegistrationManager) registrationManagerServiceTracker.getService();
+		
+		System.out.println(registrationManager.isSupportRegistration(connection));
+		
+//		RegisterExtension registrerExtension = new RegisterExtension();
+//		registrerExtension.getFields().put("username", "Noah1234");
+//		registrerExtension.getFields().put("password", "1234");
+//		registrationManager.registerAccount(connection, registrerExtension);
+		RegisterExtension registerE = registrationManager.getRegisterExtension(connection);
+		System.out.println(registerE.toXML());
+//		registrationManager.changePassword(connection, "12345");
+//		registrationManager.unregister(connection);
+		
+		registrationManagerServiceTracker.close();
+	}
+
+	
+	private void testPrivateData(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker privateDataManagerServiceTracker = new ServiceTracker(context, PrivateDataManager.class.getName(), null);
+		privateDataManagerServiceTracker.open();
+		PrivateDataManager privateDataManager = (PrivateDataManager) privateDataManagerServiceTracker.getService();
+		
+		PacketExtension extension = privateDataManager.getPrivateData(connection, "storage", "storage:bookmarks");
+		System.out.println(extension.toXML());
+		
+		privateDataManagerServiceTracker.close();
 	}
 	
-
 	private void testMuc(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
 	{
 		Thread.sleep(10 * 1000);
