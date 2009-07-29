@@ -24,6 +24,10 @@ import net.sf.mxlosgi.privacy.PrivacyManager;
 import net.sf.mxlosgi.privatedata.PrivateDataManager;
 import net.sf.mxlosgi.registration.RegisterExtension;
 import net.sf.mxlosgi.registration.RegistrationManager;
+import net.sf.mxlosgi.search.SearchExtension;
+import net.sf.mxlosgi.search.SearchManager;
+import net.sf.mxlosgi.softwareversion.SoftwareVersionExtension;
+import net.sf.mxlosgi.softwareversion.SoftwareVersionManager;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Message;
 import net.sf.mxlosgi.xmpp.PacketExtension;
@@ -47,9 +51,9 @@ public class Activator implements BundleActivator {
 
 //		String serviceName = "pidgin.im";
 //		String serviceName = "tigase.org";
-//		String serviceName = "gmail.com";
+		String serviceName = "gmail.com";
 //		String serviceName = "jabber.org";
-		String serviceName = "jabbercn.org";
+//		String serviceName = "jabbercn.org";
 //		String serviceName = "szsport.org";
 		
 		//context.registerService(ConnectionListener.class.getName(), this, null);
@@ -94,6 +98,54 @@ public class Activator implements BundleActivator {
 //		testMuc(connection, context);
 //		testPrivateData(connection, context);
 //		testRegister(connection, context);
+//		testSearch(connection, context);
+		testSoftwareVersion(connection, context);
+	}
+	
+
+	private void testSoftwareVersion(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker softwareVersionManagerServiceTracker = 
+			new ServiceTracker(context, SoftwareVersionManager.class.getName(), null);
+		softwareVersionManagerServiceTracker.open();
+		SoftwareVersionManager softwareVersionManager =
+			(SoftwareVersionManager) softwareVersionManagerServiceTracker.getService();
+		SoftwareVersionExtension version = 
+			softwareVersionManager.getSoftwareVersion(connection, new JID("Noah", "jabbercn.org", "Pidgin"));
+		
+		System.out.println(version.getName());
+		
+		softwareVersionManagerServiceTracker.close();
+	}
+	
+	private void testSearch(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(8 * 1000);
+		
+		ServiceTracker searchManagerServiceTracker = new ServiceTracker(context, SearchManager.class.getName(), null);
+		searchManagerServiceTracker.open();
+		SearchManager searchManager = (SearchManager) searchManagerServiceTracker.getService();
+		
+		boolean b = searchManager.isSupportSearch(connection, new JID("users.szsport.org"));
+		System.out.println(b);
+		
+		SearchExtension ex = searchManager.getSearchExtension(connection, new JID("users.szsport.org"));
+		System.out.println(ex.toXML());
+		
+		SearchExtension extension = new SearchExtension();
+		extension.getFields().put("nick", "how");
+		SearchExtension extensionResult = searchManager.search(connection, extension, new JID("users.szsport.org"));
+		for (SearchExtension.Item item : extensionResult.getItems())
+		{
+			
+			System.out.println(item);
+			System.out.println(item.getJid());
+			System.out.println(item.getFields());
+		}
+		
+		searchManagerServiceTracker.close();
 	}
 	private void testRegister(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
 	{
