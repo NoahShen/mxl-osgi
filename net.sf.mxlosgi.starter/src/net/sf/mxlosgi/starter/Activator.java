@@ -2,6 +2,8 @@ package net.sf.mxlosgi.starter;
 
 import java.util.Hashtable;
 
+import net.sf.mxlosgi.bookmarks.BookmarkManager;
+import net.sf.mxlosgi.bookmarks.BookmarksExtension;
 import net.sf.mxlosgi.chat.Chat;
 import net.sf.mxlosgi.chat.XmppChatManager;
 import net.sf.mxlosgi.chat.listener.ChatListener;
@@ -28,6 +30,8 @@ import net.sf.mxlosgi.search.SearchExtension;
 import net.sf.mxlosgi.search.SearchManager;
 import net.sf.mxlosgi.softwareversion.SoftwareVersionExtension;
 import net.sf.mxlosgi.softwareversion.SoftwareVersionManager;
+import net.sf.mxlosgi.vcard.VCardManager;
+import net.sf.mxlosgi.vcard.VCardPacketExtension;
 import net.sf.mxlosgi.xmpp.JID;
 import net.sf.mxlosgi.xmpp.Message;
 import net.sf.mxlosgi.xmpp.PacketExtension;
@@ -51,8 +55,8 @@ public class Activator implements BundleActivator {
 
 //		String serviceName = "pidgin.im";
 //		String serviceName = "tigase.org";
-		String serviceName = "gmail.com";
-//		String serviceName = "jabber.org";
+//		String serviceName = "gmail.com";
+		String serviceName = "jabber.org";
 //		String serviceName = "jabbercn.org";
 //		String serviceName = "szsport.org";
 		
@@ -99,10 +103,43 @@ public class Activator implements BundleActivator {
 //		testPrivateData(connection, context);
 //		testRegister(connection, context);
 //		testSearch(connection, context);
-		testSoftwareVersion(connection, context);
+//		testSoftwareVersion(connection, context);
+//		testVCard(connection, context);
+		testBookMark(connection, context);
 	}
 	
-
+	private void testBookMark(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker bookmarkManagerServiceTracker = new ServiceTracker(context, BookmarkManager.class.getName(), null);
+		bookmarkManagerServiceTracker.open();
+		BookmarkManager bookmarkManager = (BookmarkManager) bookmarkManagerServiceTracker.getService();
+		
+		
+		bookmarkManager.addBookmarkedConference(connection, "name", new JID("conference.example.com"), false, "Noah", "password");
+		bookmarkManager.addBookmarkedURL(connection, "http://www.g.cn", "google china");
+		
+		BookmarksExtension bookmarksExtension = bookmarkManager.getBookmarks(connection);
+		System.out.println(bookmarksExtension.toXML());
+		
+		bookmarkManagerServiceTracker.close();
+	}
+	
+	private void testVCard(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker vCardManagerServiceTracker = new ServiceTracker(context, VCardManager.class.getName(), null);
+		vCardManagerServiceTracker.open();
+		VCardManager vCardManager = (VCardManager) vCardManagerServiceTracker.getService();
+		VCardPacketExtension vCard = vCardManager.getVCard(connection, new JID("xiaoi001", "gmail.com", null));
+		
+		System.out.println(vCard.getPhotoBinval().length());
+		
+		vCardManagerServiceTracker.close();
+	}
+	
 	private void testSoftwareVersion(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException
 	{
 		Thread.sleep(10 * 1000);
