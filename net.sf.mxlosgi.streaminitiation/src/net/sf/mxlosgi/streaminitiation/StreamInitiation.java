@@ -49,7 +49,7 @@ public class StreamInitiation implements PacketExtension
 
 	private String mimeType;
 
-	private XMPPFile file;
+	private XmppFile file;
 
 	private Feature feature;
 
@@ -120,7 +120,7 @@ public class StreamInitiation implements PacketExtension
 	 *                  The file identified by the stream initiator to be
 	 *                  sent.
 	 */
-	public void setFile(final XMPPFile file)
+	public void setFile(final XmppFile file)
 	{
 		this.file = file;
 	}
@@ -131,7 +131,7 @@ public class StreamInitiation implements PacketExtension
 	 * @return Returns the file containing the information about the
 	 *         request.
 	 */
-	public XMPPFile getFile()
+	public XmppFile getFile()
 	{
 		return file;
 	}
@@ -212,7 +212,7 @@ public class StreamInitiation implements PacketExtension
 		initiation.mimeType = this.mimeType;
 		if (this.file != null)
 		{
-			initiation.file = (XMPPFile) this.file.clone();
+			initiation.file = (XmppFile) this.file.clone();
 		}
 		if (this.feature != null)
 		{
@@ -255,7 +255,7 @@ public class StreamInitiation implements PacketExtension
 	 * 
 	 * @author noah
 	 */
-	public static class XMPPFile implements PacketExtension
+	public static class XmppFile implements PacketExtension
 	{
 
 		/**
@@ -282,7 +282,7 @@ public class StreamInitiation implements PacketExtension
 		/**
 		 * 
 		 */
-		public XMPPFile()
+		public XmppFile()
 		{
 		}
 
@@ -294,12 +294,12 @@ public class StreamInitiation implements PacketExtension
 		 * @param size
 		 *                  The size of the file in bytes.
 		 */
-		public XMPPFile(String name)
+		public XmppFile(String name)
 		{
 			this.name = name;
 		}
 		
-		public XMPPFile(String name, long size)
+		public XmppFile(String name, long size)
 		{
 			this(name);
 			this.size = size;
@@ -520,7 +520,7 @@ public class StreamInitiation implements PacketExtension
 		@Override
 		public Object clone() throws CloneNotSupportedException
 		{
-			XMPPFile file = (XMPPFile) super.clone();
+			XmppFile file = (XmppFile) super.clone();
 			file.name = this.name;
 			file.size = this.size;
 			file.hash = this.hash;

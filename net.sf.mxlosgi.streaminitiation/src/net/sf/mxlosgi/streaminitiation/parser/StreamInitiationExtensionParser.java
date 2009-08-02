@@ -110,21 +110,21 @@ public class StreamInitiationExtensionParser implements ExtensionParser
 		return null;
 	}
 
-	private StreamInitiation.XMPPFile parseFile(XmlPullParser parser) throws XmlPullParserException, IOException
+	private StreamInitiation.XmppFile parseFile(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
 		String name = parser.getAttributeValue("", "name");
 		String size = parser.getAttributeValue("", "size");
 		String date = parser.getAttributeValue("", "date");
 		String hash = parser.getAttributeValue("", "hash");
 
-		StreamInitiation.XMPPFile file = null;
+		StreamInitiation.XmppFile file = null;
 		if (size != null && !size.isEmpty())
 		{
-			file = new StreamInitiation.XMPPFile(name, Long.parseLong(size));
+			file = new StreamInitiation.XmppFile(name, Long.parseLong(size));
 		}
 		else
 		{
-			file = new StreamInitiation.XMPPFile(name);
+			file = new StreamInitiation.XmppFile(name);
 		}
 
 		file.setDate(date);
