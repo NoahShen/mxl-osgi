@@ -181,7 +181,8 @@ public class SOCKS5ReceiveFileTransfer implements ReceiveFileTransfer, Runnable
 			for (Iterator<BytestreamPacketExtension.StreamHost> it = 
 					bytestreamPacketExtension.getStreamHosts().iterator(); it.hasNext();)
 			{
-				BytestreamPacketExtension.StreamHost streamHost = it.next();	
+				BytestreamPacketExtension.StreamHost streamHost = it.next();
+				
 				InputStream in = null;
 				try
 				{
