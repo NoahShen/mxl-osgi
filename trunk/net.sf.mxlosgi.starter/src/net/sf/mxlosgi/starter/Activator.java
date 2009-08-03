@@ -1,5 +1,6 @@
 package net.sf.mxlosgi.starter;
 
+import java.io.File;
 import java.util.Hashtable;
 
 import net.sf.mxlosgi.bookmarks.BookmarkManager;
@@ -12,10 +13,17 @@ import net.sf.mxlosgi.core.Future;
 import net.sf.mxlosgi.core.XmppConnection;
 import net.sf.mxlosgi.core.XmppException;
 import net.sf.mxlosgi.core.XmppMainManager;
+import net.sf.mxlosgi.core.filter.StanzaFilter;
 import net.sf.mxlosgi.disco.DiscoInfoManager;
 import net.sf.mxlosgi.disco.DiscoInfoPacketExtension;
 import net.sf.mxlosgi.disco.DiscoItemsManager;
 import net.sf.mxlosgi.disco.DiscoItemsPacketExtension;
+import net.sf.mxlosgi.filetransfer.FileTransfer;
+import net.sf.mxlosgi.filetransfer.FileTransferManager;
+import net.sf.mxlosgi.filetransfer.FileTransferRequest;
+import net.sf.mxlosgi.filetransfer.ReceiveFileTransfer;
+import net.sf.mxlosgi.filetransfer.SendFileTransfer;
+import net.sf.mxlosgi.filetransfer.listener.FileTransferListener;
 import net.sf.mxlosgi.lastactivity.LastActivityManager;
 import net.sf.mxlosgi.lastactivity.LastActivityPacketExtension;
 import net.sf.mxlosgi.lastactivity.listener.LastActivityListener;
@@ -55,8 +63,8 @@ public class Activator implements BundleActivator {
 
 //		String serviceName = "pidgin.im";
 //		String serviceName = "tigase.org";
-//		String serviceName = "gmail.com";
-		String serviceName = "jabber.org";
+		String serviceName = "gmail.com";
+//		String serviceName = "jabber.org";
 //		String serviceName = "jabbercn.org";
 //		String serviceName = "szsport.org";
 		
@@ -105,7 +113,117 @@ public class Activator implements BundleActivator {
 //		testSearch(connection, context);
 //		testSoftwareVersion(connection, context);
 //		testVCard(connection, context);
-		testBookMark(connection, context);
+//		testBookMark(connection, context);
+		testFileTransfer(connection, context);
+	}
+	
+	private void testFileTransfer(XmppConnection connection, BundleContext context) throws InterruptedException
+	{
+		Thread.sleep(10 * 1000);
+		
+		ServiceTracker fileTransferManagerServiceTracker = new ServiceTracker(context, FileTransferManager.class.getName(), null);
+		fileTransferManagerServiceTracker.open();
+		FileTransferManager fileTransferManager = (FileTransferManager) fileTransferManagerServiceTracker.getService();
+
+//		fileTransferManager.addProxy(new JID("proxy65.rooyee.biz"));
+//		fileTransferManager.addProxy(new JID("proxy.12jabber.com"));
+		
+		Hashtable<String, String> properties = new Hashtable<String, String>();
+		properties.put("isProxy", "true");
+		context.registerService(JID.class.getName(), new JID("proxy.4business.nl"), properties);
+		
+//		fileTransferManager.addProxy(new JID("proxy.12jabber.net"));
+//		fileTransferManager.addProxy(new JID("proxy.4business.nl"));
+		
+//		try
+//		{
+//			SendFileTransfer sendFileTransfer = fileTransferManager.createSendFileTransfer(connection, 
+//												new JID("NoahShen@jabber.org/Psi"), 
+//												new File("/home/noah/spark_2_5_8.tar.gz"));
+//			sendFileTransfer.sendFile();
+//			
+//			while (sendFileTransfer.getStatus() != FileTransfer.Status.cancelled 
+//					&& sendFileTransfer.getStatus() != FileTransfer.Status.error
+//					&& sendFileTransfer.getStatus() != FileTransfer.Status.complete)
+//			{
+//				System.out.println(sendFileTransfer.getStatus());
+//				System.out.println(sendFileTransfer.getProgress());
+//				Thread.sleep(1000 * 2);
+//				
+//			}
+//			if (sendFileTransfer.getStatus() == FileTransfer.Status.error)
+//			{
+//				if (sendFileTransfer.getException() != null)
+//				{
+//					sendFileTransfer.getException().printStackTrace();
+//				}
+//			}
+//		}
+//		catch (Exception e2)
+//		{
+//			e2.printStackTrace();
+//		}
+		
+		
+		FileTransferListener fileTransferListener = new FileTransferListener(){
+
+			@Override
+			public void fileTransferRequest(FileTransferRequest request)
+			{
+				try
+				{
+					final ReceiveFileTransfer receive = request.accept("http://jabber.org/protocol/bytestreams");
+					Thread thread = new Thread(){
+						
+						public void run()
+						{
+							try
+							{
+								receive.receiveFile(new File("/home/noah/spark_2_5_82.tar.gz"));
+							}
+							catch (Exception e1)
+							{
+								e1.printStackTrace();
+							}
+							while (receive.getStatus() != FileTransfer.Status.cancelled 
+									&& receive.getStatus() != FileTransfer.Status.error
+									&& receive.getStatus() != FileTransfer.Status.complete)
+							{
+								System.out.println(receive.getStatus());
+								System.out.println(receive.getProgress());
+								try
+								{
+									Thread.sleep(1000 * 2);
+								}
+								catch (InterruptedException e)
+								{
+								}
+								
+							}
+							if (receive.getStatus() == FileTransfer.Status.error)
+							{
+								System.out.println(receive.getError());
+								Exception e = receive.getException();
+								if (e != null)
+								{
+									e.printStackTrace();
+								}
+							}
+						}
+					};
+					thread.start();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			
+		};
+		
+		context.registerService(FileTransferListener.class.getName(), fileTransferListener, null);
+		
+		fileTransferManagerServiceTracker.close();
 	}
 	
 	private void testBookMark(XmppConnection connection, BundleContext context) throws InterruptedException, XmppException

@@ -30,4 +30,5 @@ Import-Package: net.sf.mxlosgi.core,
  org.xmlpull.v1.wrapper,
  org.xmlpull.v1.wrapper.classic
 Eclipse-LazyStart: true
-Export-Package: net.sf.mxlosgi.filetransfer
+Export-Package: net.sf.mxlosgi.filetransfer,
+ net.sf.mxlosgi.filetransfer.listener
