@@ -78,7 +78,7 @@ public class Failure implements XmlStanza
 		}
 		else
 		{
-			buf.append("\"/>");
+			buf.append("/>");
 		}
 		
 		return buf.toString();
