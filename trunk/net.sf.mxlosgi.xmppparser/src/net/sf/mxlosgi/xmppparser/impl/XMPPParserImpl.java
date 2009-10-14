@@ -813,7 +813,7 @@ public class XMPPParserImpl implements XmppParser
 					buf.append("<" + currentElement);
 				}
 				
-				if (!namespace.equals(nspace2))
+				if (nspace2 != null && !nspace2.equals(namespace))
 				{
 					buf.append(" xmlns=\"" + nspace2 + "\"");
 				}
